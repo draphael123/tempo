@@ -1,0 +1,12 @@
+{
+  "appId": "com.draphael.tempo",
+  "appName": "TEMPO",
+  "webDir": "www",
+  "backgroundColor": "#F6F0E4",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon",
+      "iconColor": "#157A5F"
+    }
+  }
+}

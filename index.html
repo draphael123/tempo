@@ -731,7 +731,7 @@ let undoSnap = null, snackTimer = null;
 function mutate(msg, fn){
   undoSnap = JSON.stringify(D);
   fn(); save(); renderAll();
-  if(typeof scheduleBackgroundReminders==="function") scheduleBackgroundReminders();
+  if(typeof refreshReminderSchedule==="function") refreshReminderSchedule();
   const bar = document.getElementById("snackbar");
   document.getElementById("snackText").textContent = msg;
   bar.classList.add("show");
@@ -1351,13 +1351,20 @@ function renderToggles(){
 }
 document.getElementById("notifyToggle").onclick = async ()=>{
   if(!D.settings.notify){
-    if("Notification" in window){
+    if(IS_NATIVE && NativeNotify){
+      try{
+        let perm = await NativeNotify.checkPermissions();
+        if(perm.display!=="granted") perm = await NativeNotify.requestPermissions();
+        if(perm.display!=="granted"){ toastOnly("Notifications are turned off for this app in phone settings."); return; }
+        await ensureNativeChannel();
+      }catch(e){ toastOnly("Couldn't enable notifications."); return; }
+    } else if("Notification" in window){
       const p = await Notification.requestPermission();
       if(p!=="granted"){ toastOnly("Notifications are blocked by the browser."); return; }
     }
     D.settings.notify = true;
   } else D.settings.notify = false;
-  save(); renderToggles(); scheduleBackgroundReminders();
+  save(); renderToggles(); refreshReminderSchedule();
 };
 document.getElementById("soundToggle").onclick = ()=>{ D.settings.sound=!D.settings.sound; save(); renderToggles(); };
 function applyTextScale(){
@@ -1541,7 +1548,65 @@ function chime(){
 /* ================= PWA + background reminders ================= */
 let swReg = null;
 const triggersSupported = ("Notification" in window) && ("showTrigger" in Notification.prototype);
+
+/* ---- native (Capacitor) bridge ---- */
+const CAP = window.Capacitor;
+const IS_NATIVE = !!(CAP && CAP.isNativePlatform && CAP.isNativePlatform());
+const NativeNotify = IS_NATIVE && CAP.Plugins ? CAP.Plugins.LocalNotifications : null;
+// stable positive 31-bit int id from a slot key (native notifications need int ids)
+function keyToInt(key){
+  let h = 5381;
+  for(let i=0;i<key.length;i++){ h = ((h<<5)+h + key.charCodeAt(i)) & 0x7fffffff; }
+  return h || 1;
+}
+async function scheduleNativeReminders(){
+  if(!NativeNotify) return;
+  try{
+    // clear our previously scheduled notifications
+    const pend = await NativeNotify.getPending();
+    if(pend && pend.notifications && pend.notifications.length)
+      await NativeNotify.cancel({notifications: pend.notifications.map(n=>({id:n.id}))});
+  }catch(e){}
+  if(!D.settings.notify) return;
+  const now = Date.now();
+  const slots = [...slotsFor(dateStr(new Date())), ...slotsFor(dateStr(new Date(now+864e5)))];
+  const notifications = [];
+  for(const s of slots){
+    const when = s.when.getTime();
+    if(when < now + 30e3) continue;
+    if(doseRec(s.key)) continue;
+    if(when > now + 30*3600e3) continue;
+    notifications.push({
+      id: keyToInt(s.key),
+      title: "Time for your dose",
+      body: s.med.name + (s.med.dose? " ("+s.med.dose+")" : "") + " is due now.",
+      schedule: { at: new Date(when), allowWhileIdle: true },
+      smallIcon: "ic_stat_icon",
+      channelId: "tempo-doses"
+    });
+  }
+  if(notifications.length){
+    try{ await NativeNotify.schedule({notifications}); }catch(e){}
+  }
+}
+async function ensureNativeChannel(){
+  if(!NativeNotify || !NativeNotify.createChannel) return;
+  try{
+    await NativeNotify.createChannel({
+      id: "tempo-doses", name: "Dose reminders",
+      description: "Reminders when a medication dose is due",
+      importance: 5, visibility: 1
+    });
+  }catch(e){}
+}
+// unified entry point used across the app
+function refreshReminderSchedule(){
+  if(IS_NATIVE) scheduleNativeReminders();
+  else scheduleBackgroundReminders();
+}
+
 async function registerSW(){
+  if(IS_NATIVE){ ensureNativeChannel(); scheduleNativeReminders(); return; }
   if(!("serviceWorker" in navigator)) return;
   try{
     swReg = await navigator.serviceWorker.register("sw.js");
@@ -1624,7 +1689,8 @@ renderAll();
 renderMeds();
 registerSW();
 // Soften the promise on browsers without scheduled-notification support.
-if(!triggersSupported){
+// Native (Capacitor) builds always have reliable OS-scheduled notifications.
+if(!IS_NATIVE && !triggersSupported){
   const h = document.getElementById("notifyHint");
   if(h) h.textContent = "Alerts you when a dose is due while the app is open in a tab";
 }

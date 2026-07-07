@@ -1,6 +1,21 @@
+# deploy / tooling
 .vercel
 .DS_Store
-node_modules
 *.log
 
-.vercel
+# node
+node_modules
+
+# capacitor generated web dir (rebuilt from root via npm run build)
+www
+
+# android build artifacts (the android/ project itself IS committed)
+android/.gradle
+android/build
+android/app/build
+android/capacitor-cordova-android-plugins
+android/local.properties
+android/.idea
+*.apk
+*.aab
+*.keystore

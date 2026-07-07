@@ -1,0 +1,20 @@
+{
+  "name": "tempo",
+  "version": "2.0.0",
+  "private": true,
+  "description": "TEMPO — Parkinson's medication rhythm companion",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/copy-web.mjs",
+    "sync": "npm run build && cap sync",
+    "open:android": "cap open android",
+    "run:android": "npm run build && cap sync android && cap run android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/local-notifications": "^8.2.0"
+  }
+}
