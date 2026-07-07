@@ -2,6 +2,7 @@ android
 node_modules
 assets
 scripts
+store
 www
 capacitor.config.json
 package.json
