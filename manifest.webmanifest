@@ -1,0 +1,18 @@
+{
+  "name": "TEMPO — Medication Rhythm Companion",
+  "short_name": "TEMPO",
+  "description": "A gentle medication-timing companion for people with Parkinson's: dose reminders, one-tap symptom check-ins, and a report to share with your neurologist.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6F0E4",
+  "theme_color": "#F6F0E4",
+  "categories": ["health", "medical", "lifestyle"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

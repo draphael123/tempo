@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TEMPO — Medication Rhythm Companion</title>
+<meta name="theme-color" content="#F6F0E4">
+<meta name="description" content="A gentle medication-timing companion for people with Parkinson's — dose reminders, one-tap symptom check-ins, and a report to share with your neurologist.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="TEMPO">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,750&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TEMPO — design system
+   Warm paper, hyperlegible type, huge tremor-friendly targets.
+   Atkinson Hyperlegible was designed by the Braille Institute
+   for maximum character recognition — chosen on purpose.
+   ============================================================ */
+:root{
+  --paper:#F6F0E4;
+  --card:#FFFDF7;
+  --ink:#2A231B;
+  --ink-soft:#6B5F4E;
+  --line:#E0D5C0;
+  --line-strong:#C9BBA0;
+
+  --on:#157A5F;      --on-soft:#DCEDE4;
+  --wearing:#996000; --wearing-soft:#F5E7C8;
+  --off:#B03A20;     --off-soft:#F4DCD3;
+  --dysk:#6B4AA0;    --dysk-soft:#E7DFF3;
+
+  --act:#157A5F;
+  --act-press:#0E5C47;
+
+  --radius:22px;
+  --shadow:0 2px 0 rgba(42,35,27,.08), 0 10px 28px -14px rgba(42,35,27,.25);
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+  --disp:"Fraunces",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:20px}
+body{
+  font-family:var(--body);
+  background:var(--paper);
+  background-image:radial-gradient(rgba(42,35,27,.035) 1px, transparent 1px);
+  background-size:26px 26px;
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:118px; /* room for nav */
+}
+button{font-family:var(--body);cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible,a:focus-visible{
+  outline:4px solid var(--dysk);outline-offset:3px;border-radius:8px;
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+
+/* ---------- header ---------- */
+header{padding:22px 0 6px;text-align:center}
+.brand{
+  font-family:var(--disp);font-weight:750;font-size:1.15rem;letter-spacing:.34em;
+  color:var(--on);text-transform:uppercase;
+}
+.brand .dot{color:var(--off)}
+.clock{
+  font-family:var(--disp);font-weight:650;font-size:3.4rem;line-height:1.05;
+  font-variant-numeric:tabular-nums;margin-top:2px;
+}
+.clock small{font-size:1.4rem;color:var(--ink-soft);font-weight:500}
+.today-date{color:var(--ink-soft);font-size:1rem;margin-top:2px}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--card);border:2px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;margin-top:18px;
+}
+.card h2{
+  font-family:var(--disp);font-weight:650;font-size:1.25rem;margin-bottom:14px;
+}
+.muted{color:var(--ink-soft)}
+
+/* ---------- next dose ring ---------- */
+.dose-hero{display:flex;flex-direction:column;align-items:center;text-align:center}
+.ringbox{position:relative;width:250px;height:250px;margin:6px auto 10px}
+.ringbox svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--line);stroke-width:14}
+.ring-fg{fill:none;stroke:var(--on);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .4s}
+.ring-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:34px;
+}
+.ring-med{font-weight:700;font-size:1.05rem;line-height:1.2}
+.ring-count{font-family:var(--disp);font-weight:750;font-size:1.9rem;line-height:1.1;margin:4px 0;font-variant-numeric:tabular-nums}
+.ring-when{color:var(--ink-soft);font-size:.95rem}
+.overdue .ring-fg{stroke:var(--off)}
+.overdue .ring-count{color:var(--off)}
+
+/* ---------- big buttons ---------- */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:12px;width:100%;
+  min-height:76px;border-radius:var(--radius);border:2px solid transparent;
+  font-size:1.3rem;font-weight:700;transition:transform .06s,background .15s;
+  touch-action:manipulation;
+}
+.btn:active{transform:scale(.985)}
+.btn-take{
+  background:var(--act);color:#FFFDF7;min-height:96px;font-size:1.5rem;
+  box-shadow:0 4px 0 var(--act-press), 0 12px 24px -10px rgba(21,122,95,.5);
+}
+.btn-take:active{background:var(--act-press);box-shadow:none;transform:translateY(3px)}
+.btn-ghost{
+  background:transparent;border-color:var(--line-strong);color:var(--ink-soft);
+  min-height:64px;font-size:1.05rem;font-weight:700;margin-top:12px;
+}
+.btn-ghost:active{background:rgba(42,35,27,.05)}
+.btn-row{display:flex;gap:12px}
+.btn-row .btn{flex:1}
+
+/* ---------- check-in grid ---------- */
+.feel-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.feel{
+  min-height:118px;border-radius:var(--radius);border:3px solid var(--line);
+  background:var(--card);display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:6px;padding:12px;transition:transform .06s;
+}
+.feel:active{transform:scale(.97)}
+.feel .big{font-family:var(--disp);font-weight:750;font-size:1.35rem;line-height:1}
+.feel .sub{font-size:.9rem;color:var(--ink-soft);text-align:center;line-height:1.25}
+.feel-on{border-color:var(--on);background:var(--on-soft)}      .feel-on .big{color:var(--on)}
+.feel-wearing{border-color:var(--wearing);background:var(--wearing-soft)} .feel-wearing .big{color:var(--wearing)}
+.feel-off{border-color:var(--off);background:var(--off-soft)}   .feel-off .big{color:var(--off)}
+.feel-dysk{border-color:var(--dysk);background:var(--dysk-soft)} .feel-dysk .big{color:var(--dysk)}
+.last-checkin{
+  margin-top:14px;text-align:center;font-size:1rem;color:var(--ink-soft);
+  min-height:1.4em;
+}
+.last-checkin b{color:var(--ink)}
+
+/* ---------- upcoming list ---------- */
+.slot-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.slot{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;
+  border:2px solid var(--line);background:var(--card);font-size:1.05rem;
+}
+.slot .t{font-family:var(--disp);font-weight:650;font-size:1.15rem;min-width:5.2ch;font-variant-numeric:tabular-nums}
+.slot .name{flex:1;font-weight:700}
+.slot .tag{font-size:.85rem;font-weight:700;padding:5px 12px;border-radius:999px}
+.tag-done{background:var(--on-soft);color:var(--on)}
+.tag-skip{background:var(--off-soft);color:var(--off)}
+.tag-wait{background:#EFE8D8;color:var(--ink-soft)}
+.tag-due{background:var(--off);color:#fff}
+.slot.done{opacity:.62}
+
+/* ---------- ribbon (day timeline) ---------- */
+.ribbon-wrap{margin-top:8px}
+.ribbon{
+  position:relative;height:56px;border-radius:12px;background:#EDE5D3;
+  border:2px solid var(--line);overflow:hidden;
+}
+.ribbon .seg{position:absolute;top:0;bottom:0}
+.seg-on{background:var(--on)} .seg-wearing{background:var(--wearing)}
+.seg-off{background:var(--off)} .seg-dysk{background:var(--dysk)}
+.ribbon .dose-tick{
+  position:absolute;top:0;bottom:0;width:4px;background:var(--ink);
+}
+.ribbon .dose-tick::after{
+  content:"";position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  width:14px;height:14px;border-radius:50%;background:var(--ink);
+  border:3px solid var(--card);
+}
+.ribbon-hours{
+  display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft);
+  margin-top:6px;font-variant-numeric:tabular-nums;
+}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;font-size:.9rem}
+.legend span{display:flex;align-items:center;gap:7px}
+.legend i{width:16px;height:16px;border-radius:5px;display:inline-block}
+
+/* ---------- day nav & log ---------- */
+.day-nav{display:flex;gap:12px;align-items:stretch;margin-top:18px}
+.day-nav button{
+  min-width:76px;min-height:64px;font-size:1.6rem;border-radius:16px;
+  border:2px solid var(--line-strong);background:var(--card);font-weight:700;
+}
+.day-nav .day-label{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:var(--disp);font-weight:650;font-size:1.25rem;
+}
+.day-nav .day-label small{font-family:var(--body);font-size:.85rem;color:var(--ink-soft);font-weight:400}
+.log-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.log-item{
+  display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:16px;
+  border:2px solid var(--line);background:var(--card);
+}
+.log-item .swatch{width:20px;height:20px;border-radius:7px;flex-shrink:0}
+.log-item .t{font-family:var(--disp);font-weight:650;min-width:5.4ch;font-variant-numeric:tabular-nums}
+.log-item .what{flex:1;font-weight:700;font-size:1rem;line-height:1.25}
+.log-item .what small{display:block;font-weight:400;color:var(--ink-soft);font-size:.85rem}
+.log-del{
+  width:56px;height:56px;border-radius:14px;border:2px solid var(--line-strong);
+  background:transparent;font-size:1.4rem;color:var(--ink-soft);flex-shrink:0;
+}
+.log-del:active{background:var(--off-soft);color:var(--off)}
+
+/* ---------- report ---------- */
+.range-picker{display:flex;gap:10px;margin-top:18px}
+.range-picker button{
+  flex:1;min-height:64px;border-radius:16px;border:2px solid var(--line-strong);
+  background:var(--card);font-size:1.1rem;font-weight:700;color:var(--ink-soft);
+}
+.range-picker button.active{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:4px}
+.stat{
+  border:2px solid var(--line);border-radius:16px;padding:14px;background:var(--card);
+}
+.stat .v{font-family:var(--disp);font-weight:750;font-size:1.8rem;line-height:1.1}
+.stat .l{font-size:.85rem;color:var(--ink-soft);margin-top:3px;line-height:1.3}
+.insight{
+  margin-top:14px;padding:16px;border-radius:16px;background:var(--wearing-soft);
+  border:2px solid var(--wearing);font-size:1rem;line-height:1.45;
+}
+.report-day{margin-top:16px}
+.report-day .rd-label{font-weight:700;font-size:.95rem;margin-bottom:5px}
+.report-day .ribbon{height:34px}
+.report-day .dose-tick::after{width:10px;height:10px;border-width:2px}
+
+/* ---------- meds ---------- */
+.med-card{border:2px solid var(--line);border-radius:16px;padding:16px;background:var(--card);margin-top:12px}
+.med-card .m-name{font-family:var(--disp);font-weight:650;font-size:1.3rem}
+.med-card .m-dose{color:var(--ink-soft);margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{
+  background:var(--on-soft);color:var(--on);font-weight:700;padding:8px 14px;
+  border-radius:999px;font-size:1rem;font-variant-numeric:tabular-nums;
+}
+.med-actions{display:flex;gap:10px;margin-top:14px}
+.med-actions button{
+  flex:1;min-height:60px;border-radius:14px;border:2px solid var(--line-strong);
+  background:transparent;font-size:1.05rem;font-weight:700;
+}
+.med-actions .danger{color:var(--off)}
+
+label{display:block;font-weight:700;font-size:1rem;margin:16px 0 6px}
+input[type=text],input[type=time]{
+  width:100%;min-height:64px;font-size:1.25rem;font-family:var(--body);
+  padding:0 16px;border-radius:14px;border:2px solid var(--line-strong);
+  background:var(--card);color:var(--ink);
+}
+.time-row{display:flex;gap:10px;margin-top:8px}
+.time-row input{flex:1}
+.time-row button{
+  width:64px;min-height:64px;border-radius:14px;border:2px solid var(--line-strong);
+  background:transparent;font-size:1.5rem;color:var(--off);font-weight:700;
+}
+.add-time{
+  margin-top:10px;min-height:60px;width:100%;border-radius:14px;font-size:1.05rem;
+  font-weight:700;border:2px dashed var(--line-strong);background:transparent;color:var(--ink-soft);
+}
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 0;border-bottom:2px solid var(--line);
+}
+.toggle-row:last-child{border-bottom:none}
+.toggle-row .tl{font-weight:700;font-size:1.05rem}
+.toggle-row .tl small{display:block;font-weight:400;color:var(--ink-soft);font-size:.85rem;margin-top:2px}
+.switch{
+  position:relative;width:84px;height:48px;border-radius:999px;border:2px solid var(--line-strong);
+  background:#EDE5D3;flex-shrink:0;transition:background .2s;
+}
+.switch::after{
+  content:"";position:absolute;top:4px;left:5px;width:36px;height:36px;border-radius:50%;
+  background:var(--card);border:2px solid var(--line-strong);transition:left .2s;
+}
+.switch.on{background:var(--on);border-color:var(--on)}
+.switch.on::after{left:38px;border-color:#fff}
+
+/* ---------- onboarding ---------- */
+.hello{
+  text-align:center;padding:30px 22px;
+}
+.hello h1{font-family:var(--disp);font-weight:750;font-size:2rem;line-height:1.15}
+.hello p{margin-top:12px;font-size:1.1rem;line-height:1.5;color:var(--ink-soft)}
+
+/* ---------- bottom nav ---------- */
+nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  background:var(--card);border-top:2px solid var(--line);
+  padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+}
+.nav-inner{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.nav-btn{
+  min-height:78px;border:none;background:transparent;border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  font-size:.95rem;font-weight:700;color:var(--ink-soft);
+}
+.nav-btn svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.nav-btn *,.feel *,.btn *{pointer-events:none}
+.nav-btn.active{background:var(--on-soft);color:var(--on)}
+
+/* ---------- reminder banner ---------- */
+.reminder{
+  position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
+  background:rgba(42,35,27,.55);padding:18px;
+}
+.reminder.show{display:flex}
+.reminder .box{
+  background:var(--card);border-radius:26px;max-width:480px;width:100%;
+  padding:30px 24px;text-align:center;border:3px solid var(--on);
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.5);
+}
+.reminder .pill-emoji{font-size:3rem}
+.reminder h3{font-family:var(--disp);font-weight:750;font-size:1.7rem;margin-top:10px}
+.reminder p{font-size:1.15rem;color:var(--ink-soft);margin-top:6px}
+.reminder .btn-take{margin-top:22px}
+
+/* ---------- snackbar ---------- */
+.snackbar{
+  position:fixed;left:50%;bottom:130px;transform:translateX(-50%) translateY(20px);
+  z-index:70;background:var(--ink);color:var(--card);border-radius:18px;
+  padding:14px 18px;display:flex;align-items:center;gap:16px;min-width:300px;
+  max-width:92vw;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  font-size:1.05rem;box-shadow:0 14px 30px -8px rgba(0,0,0,.4);
+}
+.snackbar.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.snackbar button{
+  background:transparent;border:2px solid rgba(255,253,247,.5);color:#FFD98F;
+  font-weight:700;font-size:1.05rem;border-radius:12px;padding:10px 18px;min-height:52px;
+}
+
+.screen{display:none}
+.screen.active{display:block}
+.empty{
+  text-align:center;color:var(--ink-soft);padding:26px 10px;font-size:1.05rem;line-height:1.5;
+}
+.section-gap{height:6px}
+
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff;padding-bottom:0}
+  nav,header .clock,header .today-date,.range-picker,.no-print{display:none!important}
+  .screen{display:none}
+  #screen-report{display:block}
+  .card{box-shadow:none;border-color:#bbb}
+}
+@media (max-width:430px){
+  html{font-size:18px}
+  .clock{font-size:2.9rem}
+  .ring-count{font-size:1.55rem}
+}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="brand">TEM<span class="dot">P</span>O</div>
+  <div class="clock" id="clock" aria-live="off">--:--</div>
+  <div class="today-date" id="todayDate"></div>
+</header>
+
+<main class="wrap">
+
+  <!-- ================= NOW ================= -->
+  <section class="screen active" id="screen-now">
+    <div id="onboarding" style="display:none">
+      <div class="card hello">
+        <h1>Keep your rhythm.</h1>
+        <p>TEMPO reminds you when each dose is due, logs it with one tap, and tracks how you feel between doses — so you and your neurologist can see exactly when the medicine works and when it wears off.</p>
+        <p style="margin-top:16px"><b style="color:var(--ink)">Start by adding your first medication below.</b></p>
+      </div>
+      <div class="card" id="onboardFormCard"></div>
+    </div>
+
+    <div id="nowContent">
+      <div class="card dose-hero" id="doseHero"></div>
+
+      <div class="card">
+        <h2>How are you feeling right now?</h2>
+        <div class="feel-grid" role="group" aria-label="Symptom check-in">
+          <button class="feel feel-on" data-state="on">
+            <span class="big">ON</span><span class="sub">Moving well,<br>feeling good</span>
+          </button>
+          <button class="feel feel-wearing" data-state="wearing">
+            <span class="big">Wearing off</span><span class="sub">Starting to<br>slow down</span>
+          </button>
+          <button class="feel feel-off" data-state="off">
+            <span class="big">OFF</span><span class="sub">Stiff, slow,<br>or stuck</span>
+          </button>
+          <button class="feel feel-dysk" data-state="dysk">
+            <span class="big">Dyskinesia</span><span class="sub">Extra involuntary<br>movements</span>
+          </button>
+        </div>
+        <div class="last-checkin" id="lastCheckin" aria-live="polite"></div>
+      </div>
+
+      <div class="card">
+        <h2>Today's doses</h2>
+        <ul class="slot-list" id="todaySlots"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DAY ================= -->
+  <section class="screen" id="screen-day">
+    <div class="day-nav">
+      <button id="dayPrev" aria-label="Previous day">‹</button>
+      <div class="day-label"><span id="dayLabel"></span><small id="daySub"></small></div>
+      <button id="dayNext" aria-label="Next day">›</button>
+    </div>
+    <div class="card">
+      <h2>Your day at a glance</h2>
+      <div class="ribbon-wrap">
+        <div class="ribbon" id="dayRibbon"></div>
+        <div class="ribbon-hours"><span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--on)"></i>ON</span>
+        <span><i style="background:var(--wearing)"></i>Wearing off</span>
+        <span><i style="background:var(--off)"></i>OFF</span>
+        <span><i style="background:var(--dysk)"></i>Dyskinesia</span>
+        <span><i style="background:var(--ink);border-radius:50%"></i>Dose taken</span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Log</h2>
+      <ul class="log-list" id="dayLog"></ul>
+    </div>
+  </section>
+
+  <!-- ================= REPORT ================= -->
+  <section class="screen" id="screen-report">
+    <div class="range-picker" role="group" aria-label="Report range">
+      <button data-days="7">7 days</button>
+      <button data-days="14">14 days</button>
+      <button data-days="30">30 days</button>
+    </div>
+    <div class="card">
+      <h2>Summary</h2>
+      <div class="stat-grid" id="statGrid"></div>
+      <div id="insightBox"></div>
+    </div>
+    <div class="card">
+      <h2>Day by day</h2>
+      <p class="muted" style="font-size:.9rem;margin-bottom:6px">Each row is one day, midnight to midnight. Dots are doses; colors are how you felt.</p>
+      <div id="reportDays"></div>
+      <div class="legend">
+        <span><i style="background:var(--on)"></i>ON</span>
+        <span><i style="background:var(--wearing)"></i>Wearing off</span>
+        <span><i style="background:var(--off)"></i>OFF</span>
+        <span><i style="background:var(--dysk)"></i>Dyskinesia</span>
+      </div>
+      <button class="btn btn-ghost no-print" id="printBtn" style="margin-top:18px">🖨&nbsp; Print report for your doctor</button>
+    </div>
+  </section>
+
+  <!-- ================= MEDS ================= -->
+  <section class="screen" id="screen-meds">
+    <div class="card">
+      <h2>Your medications</h2>
+      <div id="medList"></div>
+      <button class="btn btn-ghost" id="addMedBtn" style="margin-top:16px">＋&nbsp; Add a medication</button>
+      <div id="medFormHost"></div>
+    </div>
+
+    <div class="card">
+      <h2>Reminders</h2>
+      <div class="toggle-row">
+        <div class="tl">Dose notifications<small id="notifyHint">Alerts you when a dose is due, even if the app is closed</small></div>
+        <button class="switch" id="notifyToggle" role="switch" aria-checked="false" aria-label="Browser notifications"></button>
+      </div>
+      <div class="toggle-row">
+        <div class="tl">Reminder chime<small>A gentle sound when a dose is due</small></div>
+        <button class="switch" id="soundToggle" role="switch" aria-checked="true" aria-label="Reminder chime"></button>
+      </div>
+      <button class="btn btn-ghost" id="testReminder" style="margin-top:14px">Try a test reminder</button>
+    </div>
+
+    <div class="card">
+      <h2>Your data</h2>
+      <p class="muted" style="font-size:.95rem;line-height:1.45">Everything is stored only on this device. Nothing is sent anywhere.</p>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn btn-ghost" id="exportBtn" style="margin-top:0">Export backup</button>
+        <button class="btn btn-ghost" id="importBtn" style="margin-top:0">Import backup</button>
+      </div>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+      <button class="btn btn-ghost" id="clearBtn" style="color:var(--off);border-color:var(--off)">Erase all data</button>
+    </div>
+
+    <div class="card">
+      <h2>Try it with sample data</h2>
+      <p class="muted" style="font-size:.95rem;line-height:1.45">Load two weeks of realistic doses and check-ins so you can see the day view and doctor's report filled in. This replaces your current data — export a backup first if you want to keep it.</p>
+      <button class="btn btn-ghost" id="demoBtn" style="margin-top:14px">Load 14 days of sample data</button>
+    </div>
+
+    <p class="muted no-print" style="text-align:center;font-size:.82rem;line-height:1.5;padding:6px 6px 10px">
+      TEMPO is a personal tracking aid, not a medical device.<br>Always follow your care team's instructions.
+    </p>
+  </section>
+</main>
+
+<!-- reminder overlay -->
+<div class="reminder" id="reminderOverlay" role="alertdialog" aria-modal="true" aria-label="Dose reminder">
+  <div class="box">
+    <div class="pill-emoji">💊</div>
+    <h3 id="remTitle">Time for your dose</h3>
+    <p id="remBody"></p>
+    <button class="btn btn-take" id="remTake">✓&nbsp; I took it</button>
+    <button class="btn btn-ghost" id="remSnooze">Remind me in 10 minutes</button>
+  </div>
+</div>
+
+<!-- snackbar -->
+<div class="snackbar" id="snackbar" aria-live="polite">
+  <span id="snackText"></span>
+  <button id="snackUndo">UNDO</button>
+</div>
+
+<nav aria-label="Main">
+  <div class="nav-inner">
+    <button class="nav-btn active" data-screen="now">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Now
+    </button>
+    <button class="nav-btn" data-screen="day">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Day
+    </button>
+    <button class="nav-btn" data-screen="report">
+      <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Report
+    </button>
+    <button class="nav-btn" data-screen="meds">
+      <svg viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M8.5 15.5l7-7"/></svg>Meds
+    </button>
+  </div>
+</nav>
+
+<script>
+"use strict";
+/* ================= state ================= */
+const LS_KEY = "tempo-data-v1";
+const STATES = {
+  on:      {label:"ON — feeling good",     color:"var(--on)",      cls:"seg-on"},
+  wearing: {label:"Wearing off",            color:"var(--wearing)", cls:"seg-wearing"},
+  off:     {label:"OFF — stiff / slow",     color:"var(--off)",     cls:"seg-off"},
+  dysk:    {label:"Dyskinesia",             color:"var(--dysk)",    cls:"seg-dysk"},
+};
+const CHECKIN_CAP_MS = 3 * 3600e3;   // a check-in "paints" at most 3 h forward
+const GRACE_MS = 4 * 3600e3;         // a dose stays "due" for 4 h before counting as missed
+const ONTIME_MS = 30 * 60e3;
+
+let D = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){ const d = JSON.parse(raw);
+      return Object.assign({meds:[],doses:[],checkins:[],snoozes:{},settings:{}}, d,
+        {settings:Object.assign({notify:false,sound:true,reportDays:7}, d.settings||{})});
+    }
+  }catch(e){}
+  return {meds:[],doses:[],checkins:[],snoozes:{},settings:{notify:false,sound:true,reportDays:7}};
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(D)); }
+const uid = () => Math.random().toString(36).slice(2,10);
+
+/* ================= time utils ================= */
+const pad = n => String(n).padStart(2,"0");
+function dateStr(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function slotDate(ds, hm){ const [y,m,dd]=ds.split("-").map(Number); const [h,mi]=hm.split(":").map(Number); return new Date(y,m-1,dd,h,mi); }
+function fmt12(d){
+  let h=d.getHours(), m=d.getMinutes(), ap=h>=12?"PM":"AM"; h=h%12||12;
+  return h+":"+pad(m)+" "+ap;
+}
+function fmt12hm(hm){ return fmt12(slotDate(dateStr(new Date()), hm)); }
+function fmtDur(ms){
+  ms = Math.abs(ms);
+  const h = Math.floor(ms/3600e3), m = Math.round(ms%3600e3/60e3);
+  if(h===0) return m+" min";
+  return h+"h "+pad(m)+"m";
+}
+function dayLabel(ds){
+  const today = dateStr(new Date());
+  const yest = dateStr(new Date(Date.now()-864e5));
+  if(ds===today) return "Today";
+  if(ds===yest) return "Yesterday";
+  return slotDate(ds,"12:00").toLocaleDateString(undefined,{weekday:"long"});
+}
+function daySub(ds){ return slotDate(ds,"12:00").toLocaleDateString(undefined,{month:"long",day:"numeric"}); }
+
+/* ================= undo ================= */
+let undoSnap = null, snackTimer = null;
+function mutate(msg, fn){
+  undoSnap = JSON.stringify(D);
+  fn(); save(); renderAll();
+  if(typeof scheduleBackgroundReminders==="function") scheduleBackgroundReminders();
+  const bar = document.getElementById("snackbar");
+  document.getElementById("snackText").textContent = msg;
+  bar.classList.add("show");
+  clearTimeout(snackTimer);
+  snackTimer = setTimeout(()=>bar.classList.remove("show"), 12000);
+}
+document.getElementById("snackUndo").onclick = () => {
+  if(undoSnap){ D = JSON.parse(undoSnap); undoSnap = null; save(); renderAll(); }
+  document.getElementById("snackbar").classList.remove("show");
+};
+
+/* ================= slots & doses ================= */
+function slotsFor(ds){
+  const out = [];
+  for(const med of D.meds) for(const t of med.times)
+    out.push({med, time:t, when:slotDate(ds,t), key:med.id+"|"+ds+"|"+t, ds});
+  out.sort((a,b)=>a.when-b.when);
+  return out;
+}
+function doseRec(key){ return D.doses.find(x=>x.key===key); }
+function nextPending(){
+  const now = Date.now();
+  for(const ds of [dateStr(new Date()), dateStr(new Date(now+864e5))]){
+    for(const s of slotsFor(ds)){
+      if(doseRec(s.key)) continue;
+      if(now - s.when.getTime() > GRACE_MS) continue; // long missed
+      return s;
+    }
+  }
+  return null;
+}
+function prevAnchor(slot){
+  // start of the countdown window: previous slot today, else 6h before
+  const all = slotsFor(slot.ds).filter(s=>s.when < slot.when);
+  if(all.length) return all[all.length-1].when.getTime();
+  return slot.when.getTime() - 6*3600e3;
+}
+function takeDose(slot, viaReminder){
+  mutate("Dose logged — "+slot.med.name+" at "+fmt12(new Date()), ()=>{
+    D.doses.push({id:uid(), key:slot.key, medId:slot.med.id, ds:slot.ds, time:slot.time, takenAt:new Date().toISOString(), status:"taken"});
+  });
+  if(viaReminder) hideReminder();
+}
+function skipDose(slot){
+  mutate("Dose skipped — "+slot.med.name+" "+fmt12hm(slot.time), ()=>{
+    D.doses.push({id:uid(), key:slot.key, medId:slot.med.id, ds:slot.ds, time:slot.time, takenAt:null, status:"skipped"});
+  });
+}
+
+/* ================= NOW screen ================= */
+function renderNow(){
+  const onboard = document.getElementById("onboarding");
+  const content = document.getElementById("nowContent");
+  if(D.meds.length===0){
+    onboard.style.display="block"; content.style.display="none";
+    const host = document.getElementById("onboardFormCard");
+    if(!host.querySelector("form")) host.innerHTML = medFormHTML(null);
+    return;
+  }
+  onboard.style.display="none"; content.style.display="block";
+
+  // hero
+  const hero = document.getElementById("doseHero");
+  const s = nextPending();
+  if(!s){
+    hero.classList.remove("overdue");
+    hero.innerHTML = `<h2 style="margin-bottom:6px">All caught up</h2>
+      <p class="muted" style="font-size:1.1rem;line-height:1.5">No doses pending right now.<br>Nice and steady. 🌿</p>`;
+    return;
+  }
+  const now = Date.now(), when = s.when.getTime();
+  const overdue = now > when;
+  const anchor = prevAnchor(s);
+  let frac = (now - anchor) / (when - anchor);
+  frac = Math.min(1, Math.max(0, frac));
+  const R = 104, C = 2*Math.PI*R;
+  const isTodaySlot = s.ds === dateStr(new Date());
+  hero.classList.toggle("overdue", overdue);
+  hero.innerHTML = `
+    <div class="ringbox">
+      <svg viewBox="0 0 236 236" aria-hidden="true">
+        <circle class="ring-bg" cx="118" cy="118" r="${R}"/>
+        <circle class="ring-fg" cx="118" cy="118" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-frac)}"/>
+      </svg>
+      <div class="ring-center">
+        <span class="ring-med">${esc(s.med.name)}</span>
+        <span class="ring-count" id="ringCount"></span>
+        <span class="ring-when">${overdue?"was due":"due"} at ${fmt12(s.when)}${isTodaySlot?"":" tomorrow"}</span>
+      </div>
+    </div>
+    <button class="btn btn-take" id="takeBtn">✓&nbsp; I took it</button>
+    <button class="btn btn-ghost" id="skipBtn">Skip this dose</button>`;
+  updateRingCount(s);
+  document.getElementById("takeBtn").onclick = ()=>takeDose(s,false);
+  document.getElementById("skipBtn").onclick = ()=>skipDose(s);
+
+  // today slots
+  const ul = document.getElementById("todaySlots");
+  const slots = slotsFor(dateStr(new Date()));
+  if(!slots.length){ ul.innerHTML = `<div class="empty">No doses scheduled today.</div>`; }
+  else ul.innerHTML = slots.map(sl=>{
+    const rec = doseRec(sl.key);
+    let tag, cls="";
+    if(rec && rec.status==="taken"){ tag=`<span class="tag tag-done">✓ ${fmt12(new Date(rec.takenAt))}</span>`; cls="done"; }
+    else if(rec){ tag=`<span class="tag tag-skip">skipped</span>`; cls="done"; }
+    else if(Date.now()-sl.when.getTime() > GRACE_MS) tag=`<span class="tag tag-skip">missed</span>`;
+    else if(Date.now()>sl.when.getTime()) tag=`<span class="tag tag-due">due now</span>`;
+    else tag=`<span class="tag tag-wait">upcoming</span>`;
+    return `<li class="slot ${cls}"><span class="t">${fmt12(sl.when)}</span><span class="name">${esc(sl.med.name)}<span class="muted" style="font-weight:400"> ${esc(sl.med.dose||"")}</span></span>${tag}</li>`;
+  }).join("");
+
+  renderLastCheckin();
+}
+function updateRingCount(s){
+  const el = document.getElementById("ringCount");
+  if(!el) return;
+  const diff = s.when.getTime() - Date.now();
+  el.textContent = (diff<0? "+" : "in ") + fmtDur(diff) + (diff<0?" late":"");
+}
+function renderLastCheckin(){
+  const el = document.getElementById("lastCheckin");
+  const last = D.checkins[D.checkins.length-1];
+  el.innerHTML = last
+    ? `Last check-in: <b style="color:${STATES[last.state].color}">${STATES[last.state].label}</b> at ${fmt12(new Date(last.at))}`
+    : `Tap a button any time you notice a change — it takes one second.`;
+}
+document.querySelectorAll(".feel").forEach(btn=>{
+  btn.onclick = ()=>{
+    const st = btn.dataset.state;
+    mutate("Check-in saved — "+STATES[st].label, ()=>{
+      D.checkins.push({id:uid(), at:new Date().toISOString(), state:st});
+      D.checkins.sort((a,b)=>new Date(a.at)-new Date(b.at));
+    });
+  };
+});
+
+/* ================= ribbon painter ================= */
+function paintRibbon(el, ds, opts){
+  opts = opts||{};
+  const dayStart = slotDate(ds,"00:00").getTime();
+  const dayEnd = dayStart + 864e5;
+  const nowMs = Date.now();
+  const cs = D.checkins.map(c=>({...c, ms:new Date(c.at).getTime()}))
+    .filter(c=>c.ms>=dayStart-CHECKIN_CAP_MS && c.ms<dayEnd)
+    .sort((a,b)=>a.ms-b.ms);
+  let html = "";
+  for(let i=0;i<cs.length;i++){
+    const c = cs[i];
+    let end = c.ms + CHECKIN_CAP_MS;
+    if(i+1<cs.length) end = Math.min(end, cs[i+1].ms);
+    if(ds===dateStr(new Date())) end = Math.min(end, nowMs);
+    const s0 = Math.max(c.ms, dayStart), s1 = Math.min(end, dayEnd);
+    if(s1<=s0) continue;
+    const l = (s0-dayStart)/864e5*100, w = (s1-s0)/864e5*100;
+    html += `<div class="seg ${STATES[c.state].cls}" style="left:${l}%;width:${w}%" title="${STATES[c.state].label} ${fmt12(new Date(c.ms))}"></div>`;
+  }
+  for(const dose of D.doses){
+    if(dose.status!=="taken"||!dose.takenAt) continue;
+    const ms = new Date(dose.takenAt).getTime();
+    if(ms<dayStart||ms>=dayEnd) continue;
+    const l = (ms-dayStart)/864e5*100;
+    html += `<div class="dose-tick" style="left:calc(${l}% - 2px)" title="Dose ${fmt12(new Date(ms))}"></div>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ================= DAY screen ================= */
+let viewDay = dateStr(new Date());
+function renderDay(){
+  document.getElementById("dayLabel").textContent = dayLabel(viewDay);
+  document.getElementById("daySub").textContent = daySub(viewDay);
+  document.getElementById("dayNext").disabled = viewDay >= dateStr(new Date());
+  paintRibbon(document.getElementById("dayRibbon"), viewDay);
+
+  const items = [];
+  for(const d of D.doses){
+    if(d.ds!==viewDay && !(d.takenAt && dateStr(new Date(d.takenAt))===viewDay)) continue;
+    const med = D.meds.find(m=>m.id===d.medId);
+    const t = d.takenAt? new Date(d.takenAt) : slotDate(d.ds,d.time);
+    items.push({ms:t.getTime(), id:d.id, kind:"dose",
+      swatch:"var(--ink)", time:fmt12(t),
+      what:(d.status==="taken"?"Took ":"Skipped ")+(med?med.name:"medication"),
+      sub:d.status==="taken"? "scheduled for "+fmt12hm(d.time) : ""});
+  }
+  for(const c of D.checkins){
+    const t = new Date(c.at);
+    if(dateStr(t)!==viewDay) continue;
+    items.push({ms:t.getTime(), id:c.id, kind:"checkin",
+      swatch:STATES[c.state].color, time:fmt12(t), what:STATES[c.state].label, sub:""});
+  }
+  items.sort((a,b)=>a.ms-b.ms);
+  const ul = document.getElementById("dayLog");
+  ul.innerHTML = items.length? items.map(it=>`
+    <li class="log-item">
+      <span class="swatch" style="background:${it.swatch}"></span>
+      <span class="t">${it.time}</span>
+      <span class="what">${esc(it.what)}${it.sub?`<small>${esc(it.sub)}</small>`:""}</span>
+      <button class="log-del" data-kind="${it.kind}" data-id="${it.id}" aria-label="Delete entry">✕</button>
+    </li>`).join("")
+    : `<div class="empty">Nothing logged this day yet.</div>`;
+  ul.querySelectorAll(".log-del").forEach(b=>{
+    b.onclick = ()=>{
+      const {kind,id} = b.dataset;
+      mutate("Entry deleted", ()=>{
+        if(kind==="dose") D.doses = D.doses.filter(x=>x.id!==id);
+        else D.checkins = D.checkins.filter(x=>x.id!==id);
+      });
+    };
+  });
+}
+document.getElementById("dayPrev").onclick = ()=>{ viewDay = dateStr(new Date(slotDate(viewDay,"12:00").getTime()-864e5)); renderDay(); };
+document.getElementById("dayNext").onclick = ()=>{ viewDay = dateStr(new Date(slotDate(viewDay,"12:00").getTime()+864e5)); renderDay(); };
+
+/* ================= REPORT ================= */
+function renderReport(){
+  const days = D.settings.reportDays||7;
+  document.querySelectorAll(".range-picker button").forEach(b=>
+    b.classList.toggle("active", Number(b.dataset.days)===days));
+
+  const list = [];
+  for(let i=0;i<days;i++) list.push(dateStr(new Date(Date.now()-i*864e5)));
+
+  // painted-time stats
+  const dur = {on:0,wearing:0,off:0,dysk:0};
+  const offHours = {};
+  const cs = D.checkins.map(c=>({...c,ms:new Date(c.at).getTime()})).sort((a,b)=>a.ms-b.ms);
+  const rangeStart = slotDate(list[list.length-1],"00:00").getTime();
+  for(let i=0;i<cs.length;i++){
+    const c = cs[i];
+    if(c.ms<rangeStart||c.ms>Date.now()) continue;
+    let end = Math.min(c.ms+CHECKIN_CAP_MS, i+1<cs.length?cs[i+1].ms:Infinity, Date.now());
+    dur[c.state] += end-c.ms;
+    if(c.state==="off"){ const h = new Date(c.ms).getHours(); offHours[h]=(offHours[h]||0)+1; }
+  }
+  const total = dur.on+dur.wearing+dur.off+dur.dysk;
+  const pct = k => total? Math.round(dur[k]/total*100) : 0;
+
+  // dose stats
+  let taken=0, skipped=0, onTime=0, delays=[];
+  for(const d of D.doses){
+    if(!list.includes(d.ds)) continue;
+    if(d.status==="skipped"){ skipped++; continue; }
+    taken++;
+    const delay = new Date(d.takenAt).getTime() - slotDate(d.ds,d.time).getTime();
+    delays.push(delay);
+    if(Math.abs(delay)<=ONTIME_MS) onTime++;
+  }
+  const avgDelay = delays.length? delays.reduce((a,b)=>a+b,0)/delays.length : 0;
+
+  document.getElementById("statGrid").innerHTML = `
+    <div class="stat"><div class="v" style="color:var(--on)">${pct("on")}%</div><div class="l">of tracked time feeling ON</div></div>
+    <div class="stat"><div class="v" style="color:var(--off)">${pct("off")}%</div><div class="l">of tracked time OFF${dur.wearing?` (+${pct("wearing")}% wearing off)`:""}</div></div>
+    <div class="stat"><div class="v">${taken}${skipped?`<span style="font-size:1rem;color:var(--ink-soft)"> +${skipped} skipped</span>`:""}</div><div class="l">${taken===1?"dose":"doses"} logged</div></div>
+    <div class="stat"><div class="v">${taken?Math.round(onTime/taken*100)+"%":"—"}</div><div class="l">taken within 30 min of schedule${delays.length&&avgDelay>60e3?` · avg ${fmtDur(avgDelay)} late`:""}</div></div>`;
+
+  const box = document.getElementById("insightBox");
+  const worst = Object.entries(offHours).sort((a,b)=>b[1]-a[1])[0];
+  if(worst && worst[1]>=2){
+    const h = Number(worst[0]);
+    const hh = (h%12||12)+(h>=12?" PM":" AM");
+    box.innerHTML = `<div class="insight">📌 <b>Pattern spotted:</b> your OFF periods most often start around <b>${hh}</b>. Worth mentioning to your neurologist — a dose-timing adjustment near that hour may help.</div>`;
+  } else box.innerHTML = "";
+
+  document.getElementById("reportDays").innerHTML = list.map(ds=>`
+    <div class="report-day">
+      <div class="rd-label">${dayLabel(ds)} · ${daySub(ds)}</div>
+      <div class="ribbon" data-ds="${ds}"></div>
+    </div>`).join("");
+  document.querySelectorAll("#reportDays .ribbon").forEach(el=>paintRibbon(el, el.dataset.ds));
+}
+document.querySelectorAll(".range-picker button").forEach(b=>{
+  b.onclick = ()=>{ D.settings.reportDays = Number(b.dataset.days); save(); renderReport(); };
+});
+document.getElementById("printBtn").onclick = ()=>window.print();
+
+/* ================= MEDS screen ================= */
+function medFormHTML(med){
+  const times = med? med.times : ["08:00"];
+  return `<form id="medForm" data-id="${med?med.id:""}">
+    <label for="mfName">Medication name</label>
+    <input type="text" id="mfName" placeholder="e.g. Carbidopa / Levodopa" value="${med?esc(med.name):""}" required>
+    <label for="mfDose">Strength / dose <span class="muted" style="font-weight:400">(optional)</span></label>
+    <input type="text" id="mfDose" placeholder="e.g. 25 / 100 mg, 1 tablet" value="${med?esc(med.dose||""):""}">
+    <label>Times each day</label>
+    <div id="mfTimes">${times.map(t=>timeRowHTML(t)).join("")}</div>
+    <button type="button" class="add-time" id="mfAddTime">＋ Add another time</button>
+    <div class="btn-row" style="margin-top:18px">
+      <button type="submit" class="btn btn-take" style="min-height:72px;font-size:1.2rem">Save medication</button>
+      ${med!==null||D.meds.length? `<button type="button" class="btn btn-ghost" id="mfCancel" style="margin-top:0">Cancel</button>`:""}
+    </div>
+  </form>`;
+}
+function timeRowHTML(t){
+  return `<div class="time-row"><input type="time" value="${t}" required><button type="button" class="tr-del" aria-label="Remove this time">✕</button></div>`;
+}
+function bindMedForm(host, onDone){
+  const form = host.querySelector("#medForm");
+  host.querySelector("#mfAddTime").onclick = ()=>{
+    host.querySelector("#mfTimes").insertAdjacentHTML("beforeend", timeRowHTML("12:00"));
+    bindTimeDels(host);
+  };
+  bindTimeDels(host);
+  const cancel = host.querySelector("#mfCancel");
+  if(cancel) cancel.onclick = ()=>{ host.innerHTML=""; renderMeds(); };
+  form.onsubmit = e=>{
+    e.preventDefault();
+    const name = host.querySelector("#mfName").value.trim();
+    const dose = host.querySelector("#mfDose").value.trim();
+    const times = [...host.querySelectorAll("#mfTimes input")].map(i=>i.value).filter(Boolean);
+    if(!name||!times.length) return;
+    times.sort();
+    const id = form.dataset.id;
+    mutate(id? "Medication updated" : "Medication added — "+name, ()=>{
+      if(id){ const m = D.meds.find(x=>x.id===id); m.name=name; m.dose=dose; m.times=times; }
+      else D.meds.push({id:uid(), name, dose, times});
+    });
+    host.innerHTML="";
+    if(onDone) onDone();
+  };
+}
+function bindTimeDels(host){
+  host.querySelectorAll(".tr-del").forEach(b=>{
+    b.onclick = ()=>{
+      const rows = host.querySelectorAll(".time-row");
+      if(rows.length>1) b.parentElement.remove();
+    };
+  });
+}
+function renderMeds(){
+  const list = document.getElementById("medList");
+  list.innerHTML = D.meds.length? D.meds.map(m=>`
+    <div class="med-card">
+      <div class="m-name">${esc(m.name)}</div>
+      ${m.dose?`<div class="m-dose">${esc(m.dose)}</div>`:""}
+      <div class="chips">${m.times.map(t=>`<span class="chip">${fmt12hm(t)}</span>`).join("")}</div>
+      <div class="med-actions">
+        <button data-act="edit" data-id="${m.id}">Edit</button>
+        <button data-act="del" data-id="${m.id}" class="danger">Remove</button>
+      </div>
+    </div>`).join("")
+    : `<div class="empty">No medications yet.</div>`;
+  list.querySelectorAll("[data-act]").forEach(b=>{
+    const med = D.meds.find(m=>m.id===b.dataset.id);
+    if(b.dataset.act==="edit") b.onclick = ()=>{
+      const host = document.getElementById("medFormHost");
+      host.innerHTML = medFormHTML(med);
+      bindMedForm(host);
+      host.scrollIntoView({behavior:"smooth"});
+    };
+    else b.onclick = ()=> mutate("Removed "+med.name, ()=>{ D.meds = D.meds.filter(m=>m.id!==med.id); });
+  });
+}
+document.getElementById("addMedBtn").onclick = ()=>{
+  const host = document.getElementById("medFormHost");
+  host.innerHTML = medFormHTML(null);
+  bindMedForm(host);
+};
+
+/* ---------- settings toggles ---------- */
+function renderToggles(){
+  const nt = document.getElementById("notifyToggle"), st = document.getElementById("soundToggle");
+  nt.classList.toggle("on", !!D.settings.notify);
+  nt.setAttribute("aria-checked", String(!!D.settings.notify));
+  st.classList.toggle("on", !!D.settings.sound);
+  st.setAttribute("aria-checked", String(!!D.settings.sound));
+}
+document.getElementById("notifyToggle").onclick = async ()=>{
+  if(!D.settings.notify){
+    if("Notification" in window){
+      const p = await Notification.requestPermission();
+      if(p!=="granted"){ toastOnly("Notifications are blocked by the browser."); return; }
+    }
+    D.settings.notify = true;
+  } else D.settings.notify = false;
+  save(); renderToggles(); scheduleBackgroundReminders();
+};
+document.getElementById("soundToggle").onclick = ()=>{ D.settings.sound=!D.settings.sound; save(); renderToggles(); };
+document.getElementById("testReminder").onclick = ()=>{
+  showReminderBox({med:{name:"Test medication"}, time:"12:00", test:true}, "This is what a dose reminder looks like.");
+};
+function toastOnly(msg){
+  const bar = document.getElementById("snackbar");
+  document.getElementById("snackText").textContent = msg;
+  undoSnap = null;
+  bar.classList.add("show");
+  clearTimeout(snackTimer);
+  snackTimer = setTimeout(()=>bar.classList.remove("show"), 6000);
+}
+
+/* ---------- data mgmt ---------- */
+document.getElementById("exportBtn").onclick = ()=>{
+  const blob = new Blob([JSON.stringify(D,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "tempo-backup-"+dateStr(new Date())+".json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+document.getElementById("importBtn").onclick = ()=>document.getElementById("importFile").click();
+document.getElementById("importFile").onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const d = JSON.parse(r.result);
+      if(!Array.isArray(d.meds)) throw 0;
+      mutate("Backup imported", ()=>{ D = Object.assign(load(), d); });
+    }catch(err){ toastOnly("That file doesn't look like a TEMPO backup."); }
+  };
+  r.readAsText(f);
+  e.target.value = "";
+};
+let clearArmed = false;
+document.getElementById("clearBtn").onclick = function(){
+  if(!clearArmed){
+    clearArmed = true;
+    this.textContent = "Press again to erase everything";
+    setTimeout(()=>{ clearArmed=false; this.textContent="Erase all data"; }, 5000);
+    return;
+  }
+  clearArmed = false; this.textContent = "Erase all data";
+  mutate("All data erased", ()=>{ D = {meds:[],doses:[],checkins:[],snoozes:{},settings:{notify:false,sound:true,reportDays:7}}; });
+};
+
+/* ---------- sample data ---------- */
+let demoArmed = false;
+document.getElementById("demoBtn").onclick = function(){
+  if(D.meds.length && !demoArmed){
+    demoArmed = true;
+    this.textContent = "Press again — this replaces your data";
+    setTimeout(()=>{ demoArmed=false; this.textContent="Load 14 days of sample data"; }, 5000);
+    return;
+  }
+  demoArmed = false; this.textContent = "Load 14 days of sample data";
+  mutate("Sample data loaded — explore the Day & Report tabs", ()=>{ D = buildDemo(); });
+  // jump to the report so the effect is visible
+  document.querySelector('.nav-btn[data-screen="report"]').click();
+};
+function buildDemo(){
+  // deterministic-ish generator (no Math.random dependency on first paint order)
+  let seed = 20260707;
+  const rnd = ()=>{ seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed/0x7fffffff; };
+  const med = {id:uid(), name:"Carbidopa / Levodopa", dose:"25 / 100 mg", times:["07:00","11:00","15:00","19:00"]};
+  const d = {meds:[med], doses:[], checkins:[], snoozes:{}, settings:{notify:false,sound:true,reportDays:14}};
+  const today = new Date();
+  for(let back=13; back>=0; back--){
+    const day = new Date(today.getFullYear(),today.getMonth(),today.getDate()-back);
+    const ds = dateStr(day);
+    const isToday = back===0;
+    for(const t of med.times){
+      const sched = slotDate(ds,t).getTime();
+      if(isToday && sched > Date.now()) continue;          // don't fabricate future doses
+      if(rnd() < 0.06){                                     // occasional skip
+        d.doses.push({id:uid(), key:med.id+"|"+ds+"|"+t, medId:med.id, ds, time:t, takenAt:null, status:"skipped"});
+        continue;
+      }
+      const lateMin = Math.round((rnd()*rnd())*55) - 5;     // usually near on-time, sometimes late
+      const takenAt = new Date(sched + lateMin*60e3);
+      d.doses.push({id:uid(), key:med.id+"|"+ds+"|"+t, medId:med.id, ds, time:t, takenAt:takenAt.toISOString(), status:"taken"});
+      // ON shortly after the dose kicks in
+      d.checkins.push({id:uid(), at:new Date(takenAt.getTime()+35*60e3).toISOString(), state:"on"});
+      // wears off toward the end of the ~4h window — worse in the afternoon
+      const hour = slotDate(ds,t).getHours();
+      const afternoon = hour>=14 && hour<=17;
+      if(rnd() < (afternoon?0.8:0.4)){
+        d.checkins.push({id:uid(), at:new Date(sched+ (afternoon?165:195)*60e3).toISOString(), state:"wearing"});
+        if(rnd() < (afternoon?0.7:0.3))
+          d.checkins.push({id:uid(), at:new Date(sched+ (afternoon?210:225)*60e3).toISOString(), state:"off"});
+      }
+      if(rnd() < 0.05)
+        d.checkins.push({id:uid(), at:new Date(takenAt.getTime()+80*60e3).toISOString(), state:"dysk"});
+    }
+  }
+  d.checkins.sort((a,b)=>new Date(a.at)-new Date(b.at));
+  return d;
+}
+
+/* ================= reminders ================= */
+let activeReminderSlot = null, lastChimeKey = null;
+function showReminderBox(slot, bodyText){
+  activeReminderSlot = slot;
+  document.getElementById("remTitle").textContent = slot.test? "Test reminder" : "Time for your dose";
+  document.getElementById("remBody").textContent = bodyText ||
+    (slot.med.name + (slot.med.dose? " ("+slot.med.dose+")":"") + " — scheduled for " + fmt12hm(slot.time));
+  document.getElementById("reminderOverlay").classList.add("show");
+  if(D.settings.sound) chime();
+}
+function hideReminder(){ document.getElementById("reminderOverlay").classList.remove("show"); activeReminderSlot=null; }
+document.getElementById("remTake").onclick = ()=>{
+  if(activeReminderSlot && !activeReminderSlot.test) takeDose(activeReminderSlot, true);
+  else hideReminder();
+};
+document.getElementById("remSnooze").onclick = ()=>{
+  if(activeReminderSlot && !activeReminderSlot.test)
+    { D.snoozes[activeReminderSlot.key] = Date.now()+10*60e3; save(); }
+  hideReminder();
+};
+function checkReminders(){
+  if(activeReminderSlot) return;
+  const now = Date.now();
+  for(const s of slotsFor(dateStr(new Date()))){
+    if(doseRec(s.key)) continue;
+    const due = s.when.getTime();
+    if(now < due || now-due > GRACE_MS) continue;
+    if(D.snoozes[s.key] && now < D.snoozes[s.key]) continue;
+    showReminderBox(s);
+    if(D.settings.notify && "Notification" in window && Notification.permission==="granted"
+       && lastChimeKey!==s.key+Math.floor(now/600e3)){
+      try{ new Notification("TEMPO — dose time", {body:s.med.name+" is due ("+fmt12hm(s.time)+")", tag:"tempo-"+s.key}); }catch(e){}
+    }
+    lastChimeKey = s.key+Math.floor(now/600e3);
+    break;
+  }
+}
+function chime(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    [[523.25,0],[659.25,.22]].forEach(([f,t])=>{
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type="sine"; o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001, ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime+t+.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+t+.6);
+      o.connect(g).connect(ctx.destination);
+      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+.7);
+    });
+  }catch(e){}
+}
+
+/* ================= PWA + background reminders ================= */
+let swReg = null;
+const triggersSupported = ("Notification" in window) && ("showTrigger" in Notification.prototype);
+async function registerSW(){
+  if(!("serviceWorker" in navigator)) return;
+  try{
+    swReg = await navigator.serviceWorker.register("sw.js");
+    scheduleBackgroundReminders();
+  }catch(e){}
+}
+// Schedule OS-level notifications for upcoming doses so a reminder fires even
+// when the tab is closed. Uses the Notification Triggers API where available
+// (Chrome/Edge/Android); elsewhere the in-tab timer is the fallback.
+async function scheduleBackgroundReminders(){
+  if(!swReg || !triggersSupported) return;
+  if(!D.settings.notify || !("Notification" in window) || Notification.permission!=="granted") {
+    // clear any previously scheduled ones
+    try{ (await swReg.getNotifications({includeTriggered:true})).forEach(n=>{ if(n.tag && n.tag.startsWith("tempo-")) n.close(); }); }catch(e){}
+    return;
+  }
+  try{
+    (await swReg.getNotifications({includeTriggered:true})).forEach(n=>{ if(n.tag && n.tag.startsWith("tempo-")) n.close(); });
+  }catch(e){}
+  const now = Date.now();
+  const slots = [...slotsFor(dateStr(new Date())), ...slotsFor(dateStr(new Date(now+864e5)))];
+  for(const s of slots){
+    const when = s.when.getTime();
+    if(when < now + 30e3) continue;          // only future doses
+    if(doseRec(s.key)) continue;             // already logged
+    if(when > now + 26*3600e3) continue;      // cap horizon
+    try{
+      await swReg.showNotification("TEMPO — time for your dose", {
+        tag: "tempo-"+s.key,
+        body: s.med.name + (s.med.dose? " ("+s.med.dose+")" : "") + " is due now.",
+        showTrigger: new TimestampTrigger(when),
+        requireInteraction: true,
+        silent: false,
+        data: {url: location.href}
+      });
+    }catch(e){}
+  }
+}
+
+/* ================= nav & clock ================= */
+document.querySelectorAll(".nav-btn").forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll(".nav-btn").forEach(x=>x.classList.toggle("active", x===b));
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById("screen-"+b.dataset.screen).classList.add("active");
+    if(b.dataset.screen==="day"){ viewDay = dateStr(new Date()); renderDay(); }
+    if(b.dataset.screen==="report") renderReport();
+    if(b.dataset.screen==="meds") renderMeds();
+    window.scrollTo({top:0});
+  };
+});
+function tickClock(){
+  const now = new Date();
+  let h=now.getHours(), ap=h>=12?"PM":"AM"; h=h%12||12;
+  document.getElementById("clock").innerHTML = h+":"+pad(now.getMinutes())+" <small>"+ap+"</small>";
+  document.getElementById("todayDate").textContent =
+    now.toLocaleDateString(undefined,{weekday:"long", month:"long", day:"numeric"});
+}
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+/* ================= boot ================= */
+function renderAll(){
+  renderNow(); renderToggles();
+  if(document.getElementById("screen-day").classList.contains("active")) renderDay();
+  if(document.getElementById("screen-report").classList.contains("active")) renderReport();
+  if(document.getElementById("screen-meds").classList.contains("active")) renderMeds();
+  // onboarding form binding (host swapped by renderNow)
+  const ob = document.getElementById("onboardFormCard");
+  if(D.meds.length===0 && ob.querySelector("#medForm") && !ob.dataset.bound){
+    // rebind fresh each render
+  }
+  if(D.meds.length===0){
+    const host = document.getElementById("onboardFormCard");
+    if(host.querySelector("#medForm")) bindMedForm(host);
+  }
+}
+tickClock();
+renderAll();
+renderMeds();
+registerSW();
+// Soften the promise on browsers without scheduled-notification support.
+if(!triggersSupported){
+  const h = document.getElementById("notifyHint");
+  if(h) h.textContent = "Alerts you when a dose is due while the app is open in a tab";
+}
+setInterval(()=>{
+  tickClock();
+  const s = nextPending();
+  if(s) updateRingCount(s);
+  checkReminders();
+}, 1000*15);
+setInterval(()=>{ renderNow(); }, 1000*60); // refresh ring fraction each minute
+checkReminders();
+</script>
+</body>
+</html>
