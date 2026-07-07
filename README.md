@@ -2,7 +2,7 @@
 
 A gentle, accessibility-first web app for people living with **Parkinson's disease**. TEMPO helps keep levodopa (and other) doses on schedule, captures how you feel between doses with one tap, and turns it into a clear report you can hand to your neurologist.
 
-**Live:** _(added after deploy)_
+**Live:** https://tempo-amber-five.vercel.app
 
 ## Why
 
