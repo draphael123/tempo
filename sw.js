@@ -1,5 +1,5 @@
 /* TEMPO service worker — offline shell + scheduled dose notifications */
-const CACHE = "tempo-v2";
+const CACHE = "tempo-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,7 +7,8 @@ const ASSETS = [
   "./icon.svg",
   "./icon-192.png",
   "./icon-512.png",
-  "./icon-maskable.png"
+  "./icon-maskable.png",
+  "./fonts/fonts.css"
 ];
 
 self.addEventListener("install", (e) => {

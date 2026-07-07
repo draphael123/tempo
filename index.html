@@ -12,9 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="TEMPO">
 <link rel="icon" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,750&display=swap" rel="stylesheet">
+<!-- Fonts bundled locally so the app looks right instantly, even offline -->
+<link rel="stylesheet" href="fonts/fonts.css">
 <style>
 /* ============================================================
    TEMPO — design system
@@ -43,7 +42,7 @@
   --body:"Atkinson Hyperlegible",system-ui,sans-serif;
   --disp:"Fraunces",Georgia,serif;
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{font-size:20px}
 body{
   font-family:var(--body);
@@ -54,7 +53,17 @@ body{
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
   padding-bottom:118px; /* room for nav */
+  /* native-app feel: no text selection / callouts / double-tap zoom / overscroll glow */
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none;
+  touch-action:manipulation;
+  overscroll-behavior:none;
 }
+/* keep selection + caret where typing actually happens */
+input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+/* hide the bottom nav while the on-screen keyboard is up so it can't float mid-screen */
+body.kb-open nav{display:none}
+body.kb-open{padding-bottom:0}
 button{font-family:var(--body);cursor:pointer;-webkit-tap-highlight-color:transparent}
 button:focus-visible,input:focus-visible,a:focus-visible{
   outline:4px solid var(--dysk);outline-offset:3px;border-radius:8px;
@@ -66,7 +75,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{
 .wrap{max-width:720px;margin:0 auto;padding:0 16px}
 
 /* ---------- header ---------- */
-header{padding:22px 0 6px;text-align:center}
+header{padding:calc(22px + env(safe-area-inset-top)) 0 6px;text-align:center}
 .brand{
   font-family:var(--disp);font-weight:750;font-size:1.15rem;letter-spacing:.34em;
   color:var(--on);text-transform:uppercase;
@@ -775,6 +784,7 @@ function decInventory(med){
   }
 }
 function takeDose(slot, viaReminder){
+  haptic("MEDIUM");
   mutate("Dose logged — "+slot.med.name+" at "+fmt12(new Date()), ()=>{
     D.doses.push({id:uid(), key:slot.key, medId:slot.med.id, ds:slot.ds, time:slot.time, takenAt:new Date().toISOString(), status:"taken"});
     decInventory(D.meds.find(m=>m.id===slot.med.id));
@@ -893,6 +903,7 @@ let detailTargetId = null;
 document.querySelectorAll(".feel").forEach(btn=>{
   btn.onclick = ()=>{
     const st = btn.dataset.state;
+    haptic("LIGHT");
     const id = uid();
     mutate("Check-in saved — "+STATES[st].label, ()=>{
       D.checkins.push({id, at:new Date().toISOString(), state:st, tags:[], note:""});
@@ -1613,6 +1624,43 @@ async function registerSW(){
     scheduleBackgroundReminders();
   }catch(e){}
 }
+
+/* ---- native shell setup: status bar, splash, keyboard, back button, haptics ---- */
+const P = (CAP && CAP.Plugins) || {};
+function haptic(style){ if(IS_NATIVE && P.Haptics){ try{ P.Haptics.impact({style: style||"MEDIUM"}); }catch(e){} } }
+let lastBackPress = 0;
+function nativeInit(){
+  if(!IS_NATIVE) return;
+  // status bar: paper background, dark icons, webview sits below it (no notch overlap)
+  if(P.StatusBar){
+    P.StatusBar.setOverlaysWebView({overlay:false}).catch(()=>{});
+    P.StatusBar.setStyle({style:"LIGHT"}).catch(()=>{});
+    P.StatusBar.setBackgroundColor({color:"#F6F0E4"}).catch(()=>{}); // Android only
+  }
+  // keyboard: resize the view and hide the bottom nav while it's up
+  if(P.Keyboard){
+    P.Keyboard.setResizeMode({mode:"native"}).catch(()=>{});
+    P.Keyboard.addListener("keyboardWillShow", ()=>document.body.classList.add("kb-open"));
+    P.Keyboard.addListener("keyboardDidHide", ()=>document.body.classList.remove("kb-open"));
+  }
+  // Android hardware/gesture back: close sheets → go to Now → confirm exit
+  if(P.App){
+    P.App.addListener("backButton", ()=>{
+      const ds=document.getElementById("detailSheet"), es=document.getElementById("extraSheet"), ro=document.getElementById("reminderOverlay");
+      if(ds.classList.contains("show")){ closeDetailSheet(true); return; }
+      if(es.classList.contains("show")){ es.classList.remove("show"); return; }
+      if(ro.classList.contains("show")){ hideReminder(); return; }
+      const active=document.querySelector(".nav-btn.active");
+      if(active && active.dataset.screen!=="now"){ document.querySelector('.nav-btn[data-screen="now"]').click(); return; }
+      if(Date.now()-lastBackPress < 2000){ try{ P.App.exitApp(); }catch(e){} }
+      else { lastBackPress=Date.now(); toastOnly("Press back again to exit"); }
+    });
+    // reschedule reminders when the app returns to the foreground (times/day may have changed)
+    P.App.addListener("resume", ()=>{ refreshReminderSchedule(); renderNow(); });
+  }
+  // hide the splash once the UI has painted
+  if(P.SplashScreen) setTimeout(()=>{ try{ P.SplashScreen.hide(); }catch(e){} }, 200);
+}
 // Schedule OS-level notifications for upcoming doses so a reminder fires even
 // when the tab is closed. Uses the Notification Triggers API where available
 // (Chrome/Edge/Android); elsewhere the in-tab timer is the fallback.
@@ -1687,6 +1735,7 @@ tickClock();
 applyTextScale();
 renderAll();
 renderMeds();
+nativeInit();
 registerSW();
 // Soften the promise on browsers without scheduled-notification support.
 // Native (Capacitor) builds always have reliable OS-scheduled notifications.
