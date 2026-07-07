@@ -178,6 +178,12 @@ header{padding:22px 0 6px;text-align:center}
   width:14px;height:14px;border-radius:50%;background:var(--ink);
   border:3px solid var(--card);
 }
+.ribbon .dose-tick-prn{background:var(--dysk)}
+.ribbon .dose-tick-prn::after{background:var(--dysk)}
+.ribbon .meal-tick{
+  position:absolute;bottom:-2px;font-size:11px;line-height:1;filter:saturate(.7);
+  z-index:1;pointer-events:none;
+}
 .ribbon-hours{
   display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft);
   margin-top:6px;font-variant-numeric:tabular-nums;
@@ -211,6 +217,11 @@ header{padding:22px 0 6px;text-align:center}
   background:transparent;font-size:1.4rem;color:var(--ink-soft);flex-shrink:0;
 }
 .log-del:active{background:var(--off-soft);color:var(--off)}
+.log-edit{
+  width:56px;height:56px;border-radius:14px;border:2px solid var(--line-strong);
+  background:transparent;font-size:1.3rem;color:var(--ink-soft);flex-shrink:0;
+}
+.log-edit:active{background:var(--dysk-soft);color:var(--dysk)}
 
 /* ---------- report ---------- */
 .range-picker{display:flex;gap:10px;margin-top:18px}
@@ -337,6 +348,61 @@ nav{
   font-weight:700;font-size:1.05rem;border-radius:12px;padding:10px 18px;min-height:52px;
 }
 
+/* ---------- bottom sheet ---------- */
+.sheet{
+  position:fixed;inset:0;z-index:65;display:none;align-items:flex-end;justify-content:center;
+  background:rgba(42,35,27,.5);
+}
+.sheet.show{display:flex;animation:sheetFade .18s ease}
+@keyframes sheetFade{from{opacity:0}to{opacity:1}}
+.sheet-box{
+  background:var(--card);width:100%;max-width:560px;border-radius:26px 26px 0 0;
+  padding:14px 22px calc(26px + env(safe-area-inset-bottom));
+  box-shadow:0 -20px 50px -20px rgba(0,0,0,.4);animation:sheetUp .22s ease;
+}
+@keyframes sheetUp{from{transform:translateY(30px)}to{transform:translateY(0)}}
+.sheet-handle{width:52px;height:6px;border-radius:999px;background:var(--line-strong);margin:0 auto 14px}
+.sheet-box h3{font-family:var(--disp);font-weight:650;font-size:1.4rem}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.tag-opt{
+  min-height:56px;padding:0 18px;border-radius:999px;border:2px solid var(--line-strong);
+  background:var(--card);font-size:1.05rem;font-weight:700;color:var(--ink-soft);
+}
+.tag-opt.sel{background:var(--dysk-soft);border-color:var(--dysk);color:var(--dysk)}
+textarea{
+  width:100%;font-family:var(--body);font-size:1.1rem;padding:14px 52px 14px 16px;
+  border-radius:14px;border:2px solid var(--line-strong);background:var(--card);color:var(--ink);
+  resize:vertical;min-height:60px;
+}
+.mic-btn{
+  position:absolute;right:8px;top:8px;width:44px;height:44px;border-radius:12px;
+  border:2px solid var(--line-strong);background:var(--card);font-size:1.2rem;
+}
+.mic-btn.rec{background:var(--off-soft);border-color:var(--off);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.extra-med{
+  display:flex;align-items:center;gap:12px;width:100%;min-height:72px;margin-bottom:10px;
+  border-radius:16px;border:2px solid var(--line-strong);background:var(--card);
+  font-size:1.15rem;font-weight:700;padding:0 18px;text-align:left;
+}
+.extra-med .em-dose{font-weight:400;color:var(--ink-soft);font-size:.95rem}
+
+/* ---------- text scale ---------- */
+html.scale-lg{font-size:23px}
+html.scale-xl{font-size:26px}
+.seg-picker{display:flex;gap:10px;margin-top:12px}
+.seg-picker button{
+  flex:1;min-height:60px;border-radius:14px;border:2px solid var(--line-strong);
+  background:var(--card);font-weight:700;color:var(--ink-soft);
+}
+.seg-picker button.active{background:var(--ink);color:var(--card);border-color:var(--ink)}
+
+/* ---------- inventory ---------- */
+.inv-line{margin-top:10px;font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.inv-low{color:var(--off)}
+.inv-ok{color:var(--on)}
+.prn-badge{background:var(--dysk-soft);color:var(--dysk);font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:999px}
+
 .screen{display:none}
 .screen.active{display:block}
 .empty{
@@ -345,12 +411,25 @@ nav{
 .section-gap{height:6px}
 
 /* ---------- print ---------- */
+.print-head{display:none}
+.print-only{display:none}
+.print-table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:8px}
+.print-table th,.print-table td{border:1px solid #ccc;padding:5px 8px;text-align:left}
+.print-table th{background:#f0e9da}
 @media print{
+  html{font-size:15px}
   body{background:#fff;padding-bottom:0}
-  nav,header .clock,header .today-date,.range-picker,.no-print{display:none!important}
+  nav,header,.range-picker,.no-print,#insightBox .no-print{display:none!important}
   .screen{display:none}
   #screen-report{display:block}
-  .card{box-shadow:none;border-color:#bbb}
+  .card{box-shadow:none;border-color:#bbb;break-inside:avoid;margin-top:12px}
+  .print-head{display:block;text-align:center;margin-bottom:6px}
+  .print-head .ph-title{font-family:var(--disp);font-weight:750;font-size:1.5rem}
+  .print-head .ph-sub{color:#444;margin-top:2px}
+  .print-head .ph-meds{font-size:.8rem;color:#333;margin-top:8px;line-height:1.4}
+  .print-only{display:block!important}
+  .report-day{break-inside:avoid}
+  .insight{background:#f6efe0!important;border-color:#999!important}
 }
 @media (max-width:430px){
   html{font-size:18px}
@@ -403,6 +482,15 @@ nav{
       </div>
 
       <div class="card">
+        <h2>Quick log</h2>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="mealBtn" style="margin-top:0">🍽&nbsp; Log a meal</button>
+          <button class="btn btn-ghost" id="extraDoseBtn" style="margin-top:0">➕&nbsp; Extra dose</button>
+        </div>
+        <p class="muted" style="font-size:.85rem;line-height:1.4;margin-top:10px">Meals matter: protein can delay how fast levodopa works, so logging them helps the report spot the connection.</p>
+      </div>
+
+      <div class="card">
         <h2>Today's doses</h2>
         <ul class="slot-list" id="todaySlots"></ul>
       </div>
@@ -438,6 +526,7 @@ nav{
 
   <!-- ================= REPORT ================= -->
   <section class="screen" id="screen-report">
+    <div class="print-head" id="printHead" aria-hidden="true"></div>
     <div class="range-picker" role="group" aria-label="Report range">
       <button data-days="7">7 days</button>
       <button data-days="14">14 days</button>
@@ -458,7 +547,9 @@ nav{
         <span><i style="background:var(--off)"></i>OFF</span>
         <span><i style="background:var(--dysk)"></i>Dyskinesia</span>
       </div>
-      <button class="btn btn-ghost no-print" id="printBtn" style="margin-top:18px">🖨&nbsp; Print report for your doctor</button>
+      <div class="card print-only" id="printLog" style="display:none"></div>
+      <button class="btn btn-ghost no-print" id="printBtn" style="margin-top:18px">🖨&nbsp; Save as PDF / print for your doctor</button>
+      <p class="muted no-print" style="font-size:.82rem;text-align:center;margin-top:8px">In the print dialog, choose <b>“Save as PDF”</b> as the destination to get a file you can email.</p>
     </div>
   </section>
 
@@ -482,6 +573,16 @@ nav{
         <button class="switch" id="soundToggle" role="switch" aria-checked="true" aria-label="Reminder chime"></button>
       </div>
       <button class="btn btn-ghost" id="testReminder" style="margin-top:14px">Try a test reminder</button>
+    </div>
+
+    <div class="card">
+      <h2>Display</h2>
+      <div class="tl" style="font-weight:700">Text size</div>
+      <div class="seg-picker" id="scalePicker" role="group" aria-label="Text size">
+        <button data-scale="md" style="font-size:1rem">Normal</button>
+        <button data-scale="lg" style="font-size:1.2rem">Large</button>
+        <button data-scale="xl" style="font-size:1.4rem">Largest</button>
+      </div>
     </div>
 
     <div class="card">
@@ -515,6 +616,32 @@ nav{
     <p id="remBody"></p>
     <button class="btn btn-take" id="remTake">✓&nbsp; I took it</button>
     <button class="btn btn-ghost" id="remSnooze">Remind me in 10 minutes</button>
+  </div>
+</div>
+
+<!-- check-in detail sheet -->
+<div class="sheet" id="detailSheet" role="dialog" aria-modal="true" aria-label="Add detail to check-in">
+  <div class="sheet-box">
+    <div class="sheet-handle"></div>
+    <h3 id="detailTitle">Anything more? <span class="muted" style="font-weight:400;font-size:1rem">(optional)</span></h3>
+    <p class="muted" style="font-size:.95rem;margin:4px 0 12px">Tap any that apply, or just close — your check-in is already saved.</p>
+    <div class="tag-cloud" id="tagCloud"></div>
+    <div style="position:relative">
+      <textarea id="detailNote" rows="2" placeholder="Add a note (optional)…"></textarea>
+      <button class="mic-btn" id="micBtn" aria-label="Dictate a note" title="Dictate a note">🎙</button>
+    </div>
+    <button class="btn btn-take" id="detailDone" style="min-height:72px;font-size:1.2rem;margin-top:14px">Done</button>
+  </div>
+</div>
+
+<!-- extra / rescue dose picker -->
+<div class="sheet" id="extraSheet" role="dialog" aria-modal="true" aria-label="Log an extra dose">
+  <div class="sheet-box">
+    <div class="sheet-handle"></div>
+    <h3>Log an extra dose</h3>
+    <p class="muted" style="font-size:.95rem;margin:4px 0 12px">A rescue or as-needed dose taken now, outside the schedule.</p>
+    <div id="extraMedList"></div>
+    <button class="btn btn-ghost" id="extraCancel" style="margin-top:6px">Cancel</button>
   </div>
 </div>
 
@@ -555,16 +682,22 @@ const CHECKIN_CAP_MS = 3 * 3600e3;   // a check-in "paints" at most 3 h forward
 const GRACE_MS = 4 * 3600e3;         // a dose stays "due" for 4 h before counting as missed
 const ONTIME_MS = 30 * 60e3;
 
+const SYMPTOM_TAGS = ["Tremor","Stiffness","Slowness","Freezing","Balance","Nausea","Dizziness","Fatigue","Anxiety","Pain"];
 let D = load();
 function load(){
+  const base = {meds:[],doses:[],checkins:[],meals:[],snoozes:{},settings:{}};
+  const baseSettings = {notify:false,sound:true,reportDays:7,textScale:"md"};
   try{
     const raw = localStorage.getItem(LS_KEY);
     if(raw){ const d = JSON.parse(raw);
-      return Object.assign({meds:[],doses:[],checkins:[],snoozes:{},settings:{}}, d,
-        {settings:Object.assign({notify:false,sound:true,reportDays:7}, d.settings||{})});
+      const merged = Object.assign({}, base, d, {settings:Object.assign({}, baseSettings, d.settings||{})});
+      if(!Array.isArray(merged.meals)) merged.meals = [];
+      // forward-compat defaults on records
+      merged.meds.forEach(m=>{ if(m.prn===undefined) m.prn=false; });
+      return merged;
     }
   }catch(e){}
-  return {meds:[],doses:[],checkins:[],snoozes:{},settings:{notify:false,sound:true,reportDays:7}};
+  return Object.assign({}, base, {settings:baseSettings});
 }
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(D)); }
 const uid = () => Math.random().toString(36).slice(2,10);
@@ -636,9 +769,15 @@ function prevAnchor(slot){
   if(all.length) return all[all.length-1].when.getTime();
   return slot.when.getTime() - 6*3600e3;
 }
+function decInventory(med){
+  if(med && typeof med.inventory === "number"){
+    med.inventory = Math.max(0, med.inventory - (med.pillsPerDose||1));
+  }
+}
 function takeDose(slot, viaReminder){
   mutate("Dose logged — "+slot.med.name+" at "+fmt12(new Date()), ()=>{
     D.doses.push({id:uid(), key:slot.key, medId:slot.med.id, ds:slot.ds, time:slot.time, takenAt:new Date().toISOString(), status:"taken"});
+    decInventory(D.meds.find(m=>m.id===slot.med.id));
   });
   if(viaReminder) hideReminder();
 }
@@ -646,6 +785,31 @@ function skipDose(slot){
   mutate("Dose skipped — "+slot.med.name+" "+fmt12hm(slot.time), ()=>{
     D.doses.push({id:uid(), key:slot.key, medId:slot.med.id, ds:slot.ds, time:slot.time, takenAt:null, status:"skipped"});
   });
+}
+// Extra / rescue / as-needed dose logged at the current moment (no schedule slot).
+function logExtraDose(medId){
+  const med = D.meds.find(m=>m.id===medId);
+  if(!med) return;
+  const now = new Date();
+  mutate("Extra dose logged — "+med.name+" at "+fmt12(now), ()=>{
+    D.doses.push({id:uid(), key:"prn|"+med.id+"|"+now.getTime(), medId:med.id,
+      ds:dateStr(now), time:pad(now.getHours())+":"+pad(now.getMinutes()),
+      takenAt:now.toISOString(), status:"taken", prn:true});
+    decInventory(D.meds.find(m=>m.id===med.id));
+  });
+}
+function logMeal(){
+  const now = new Date();
+  mutate("Meal logged at "+fmt12(now), ()=>{
+    D.meals.push({id:uid(), at:now.toISOString()});
+    D.meals.sort((a,b)=>new Date(a.at)-new Date(b.at));
+  });
+}
+function nearestMealGap(ms){
+  // minutes to the closest meal, or Infinity if none
+  let best = Infinity;
+  for(const m of D.meals){ const g = Math.abs(new Date(m.at).getTime()-ms); if(g<best) best=g; }
+  return best;
 }
 
 /* ================= NOW screen ================= */
@@ -725,14 +889,90 @@ function renderLastCheckin(){
     ? `Last check-in: <b style="color:${STATES[last.state].color}">${STATES[last.state].label}</b> at ${fmt12(new Date(last.at))}`
     : `Tap a button any time you notice a change — it takes one second.`;
 }
+let detailTargetId = null;
 document.querySelectorAll(".feel").forEach(btn=>{
   btn.onclick = ()=>{
     const st = btn.dataset.state;
+    const id = uid();
     mutate("Check-in saved — "+STATES[st].label, ()=>{
-      D.checkins.push({id:uid(), at:new Date().toISOString(), state:st});
+      D.checkins.push({id, at:new Date().toISOString(), state:st, tags:[], note:""});
       D.checkins.sort((a,b)=>new Date(a.at)-new Date(b.at));
     });
+    openDetailSheet(id, st);
   };
+});
+function openDetailSheet(id, st){
+  detailTargetId = id;
+  const c = D.checkins.find(x=>x.id===id) || {tags:[],note:""};
+  document.getElementById("detailTitle").innerHTML =
+    `Feeling <b style="color:${STATES[st].color}">${STATES[st].label.split(" — ")[0]}</b> — anything more? <span class="muted" style="font-weight:400;font-size:1rem">(optional)</span>`;
+  const cloud = document.getElementById("tagCloud");
+  cloud.innerHTML = SYMPTOM_TAGS.map(t=>
+    `<button class="tag-opt${c.tags&&c.tags.includes(t)?" sel":""}" data-tag="${t}">${t}</button>`).join("");
+  cloud.querySelectorAll(".tag-opt").forEach(b=>{
+    b.onclick = ()=> b.classList.toggle("sel");
+  });
+  document.getElementById("detailNote").value = c.note||"";
+  document.getElementById("detailSheet").classList.add("show");
+}
+function closeDetailSheet(saveIt){
+  if(saveIt && detailTargetId){
+    const c = D.checkins.find(x=>x.id===detailTargetId);
+    if(c){
+      c.tags = [...document.querySelectorAll("#tagCloud .tag-opt.sel")].map(b=>b.dataset.tag);
+      c.note = document.getElementById("detailNote").value.trim();
+      save(); renderAll();
+    }
+  }
+  stopDictation();
+  detailTargetId = null;
+  document.getElementById("detailSheet").classList.remove("show");
+}
+document.getElementById("detailDone").onclick = ()=>closeDetailSheet(true);
+document.getElementById("detailSheet").addEventListener("click", e=>{
+  if(e.target.id==="detailSheet") closeDetailSheet(true);
+});
+
+/* ---- voice dictation (Web Speech API, feature-detected) ---- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog = null;
+function stopDictation(){ if(recog){ try{recog.stop();}catch(e){} recog=null; } document.getElementById("micBtn").classList.remove("rec"); }
+document.getElementById("micBtn").onclick = ()=>{
+  if(!SR){ toastOnly("Voice input isn't available in this browser."); return; }
+  if(recog){ stopDictation(); return; }
+  recog = new SR();
+  recog.lang = navigator.language || "en-US";
+  recog.interimResults = true;
+  recog.continuous = false;
+  const ta = document.getElementById("detailNote");
+  const baseText = ta.value ? ta.value.replace(/\s+$/,"")+" " : "";
+  document.getElementById("micBtn").classList.add("rec");
+  recog.onresult = e=>{
+    let txt = "";
+    for(let i=0;i<e.results.length;i++) txt += e.results[i][0].transcript;
+    ta.value = baseText + txt;
+  };
+  recog.onerror = ()=>stopDictation();
+  recog.onend = ()=>{ document.getElementById("micBtn").classList.remove("rec"); recog=null; };
+  try{ recog.start(); }catch(e){ stopDictation(); }
+};
+if(!SR){ const m=document.getElementById("micBtn"); if(m) m.style.display="none"; }
+
+/* ---- meal & extra-dose quick actions ---- */
+document.getElementById("mealBtn").onclick = logMeal;
+document.getElementById("extraDoseBtn").onclick = ()=>{
+  if(!D.meds.length){ toastOnly("Add a medication first."); return; }
+  const host = document.getElementById("extraMedList");
+  host.innerHTML = D.meds.map(m=>
+    `<button class="extra-med" data-id="${m.id}"><span>${esc(m.name)}<br><span class="em-dose">${esc(m.dose||"one dose")} · now</span></span></button>`).join("");
+  host.querySelectorAll(".extra-med").forEach(b=>{
+    b.onclick = ()=>{ document.getElementById("extraSheet").classList.remove("show"); logExtraDose(b.dataset.id); };
+  });
+  document.getElementById("extraSheet").classList.add("show");
+};
+document.getElementById("extraCancel").onclick = ()=>document.getElementById("extraSheet").classList.remove("show");
+document.getElementById("extraSheet").addEventListener("click", e=>{
+  if(e.target.id==="extraSheet") document.getElementById("extraSheet").classList.remove("show");
 });
 
 /* ================= ribbon painter ================= */
@@ -755,12 +995,18 @@ function paintRibbon(el, ds, opts){
     const l = (s0-dayStart)/864e5*100, w = (s1-s0)/864e5*100;
     html += `<div class="seg ${STATES[c.state].cls}" style="left:${l}%;width:${w}%" title="${STATES[c.state].label} ${fmt12(new Date(c.ms))}"></div>`;
   }
+  for(const meal of D.meals){
+    const ms = new Date(meal.at).getTime();
+    if(ms<dayStart||ms>=dayEnd) continue;
+    const l = (ms-dayStart)/864e5*100;
+    html += `<div class="meal-tick" style="left:calc(${l}% - 7px)" title="Meal ${fmt12(new Date(ms))}">🍽</div>`;
+  }
   for(const dose of D.doses){
     if(dose.status!=="taken"||!dose.takenAt) continue;
     const ms = new Date(dose.takenAt).getTime();
     if(ms<dayStart||ms>=dayEnd) continue;
     const l = (ms-dayStart)/864e5*100;
-    html += `<div class="dose-tick" style="left:calc(${l}% - 2px)" title="Dose ${fmt12(new Date(ms))}"></div>`;
+    html += `<div class="dose-tick${dose.prn?" dose-tick-prn":""}" style="left:calc(${l}% - 2px)" title="${dose.prn?"Extra dose":"Dose"} ${fmt12(new Date(ms))}"></div>`;
   }
   el.innerHTML = html;
 }
@@ -778,16 +1024,28 @@ function renderDay(){
     if(d.ds!==viewDay && !(d.takenAt && dateStr(new Date(d.takenAt))===viewDay)) continue;
     const med = D.meds.find(m=>m.id===d.medId);
     const t = d.takenAt? new Date(d.takenAt) : slotDate(d.ds,d.time);
-    items.push({ms:t.getTime(), id:d.id, kind:"dose",
-      swatch:"var(--ink)", time:fmt12(t),
-      what:(d.status==="taken"?"Took ":"Skipped ")+(med?med.name:"medication"),
-      sub:d.status==="taken"? "scheduled for "+fmt12hm(d.time) : ""});
+    let sub = "";
+    if(d.prn) sub = "extra / as-needed dose";
+    else if(d.status==="taken") sub = "scheduled for "+fmt12hm(d.time);
+    items.push({ms:t.getTime(), id:d.id, kind:"dose", editable:d.status==="taken",
+      swatch:d.prn?"var(--dysk)":"var(--ink)", time:fmt12(t),
+      what:(d.status==="taken"?"Took ":"Skipped ")+(med?med.name:"medication"), sub});
   }
   for(const c of D.checkins){
     const t = new Date(c.at);
     if(dateStr(t)!==viewDay) continue;
+    const extra = [];
+    if(c.tags&&c.tags.length) extra.push(c.tags.join(", "));
+    if(c.note) extra.push("“"+c.note+"”");
     items.push({ms:t.getTime(), id:c.id, kind:"checkin",
-      swatch:STATES[c.state].color, time:fmt12(t), what:STATES[c.state].label, sub:""});
+      swatch:STATES[c.state].color, time:fmt12(t), what:STATES[c.state].label,
+      sub:extra.join(" · ")});
+  }
+  for(const m of D.meals){
+    const t = new Date(m.at);
+    if(dateStr(t)!==viewDay) continue;
+    items.push({ms:t.getTime(), id:m.id, kind:"meal",
+      swatch:"var(--wearing)", time:fmt12(t), what:"🍽 Meal", sub:""});
   }
   items.sort((a,b)=>a.ms-b.ms);
   const ul = document.getElementById("dayLog");
@@ -796,6 +1054,7 @@ function renderDay(){
       <span class="swatch" style="background:${it.swatch}"></span>
       <span class="t">${it.time}</span>
       <span class="what">${esc(it.what)}${it.sub?`<small>${esc(it.sub)}</small>`:""}</span>
+      ${it.editable?`<button class="log-edit" data-id="${it.id}" aria-label="Edit dose time">✎</button>`:""}
       <button class="log-del" data-kind="${it.kind}" data-id="${it.id}" aria-label="Delete entry">✕</button>
     </li>`).join("")
     : `<div class="empty">Nothing logged this day yet.</div>`;
@@ -804,9 +1063,27 @@ function renderDay(){
       const {kind,id} = b.dataset;
       mutate("Entry deleted", ()=>{
         if(kind==="dose") D.doses = D.doses.filter(x=>x.id!==id);
+        else if(kind==="meal") D.meals = D.meals.filter(x=>x.id!==id);
         else D.checkins = D.checkins.filter(x=>x.id!==id);
       });
     };
+  });
+  ul.querySelectorAll(".log-edit").forEach(b=>{
+    b.onclick = ()=>editDoseTime(b.dataset.id);
+  });
+}
+function editDoseTime(id){
+  const d = D.doses.find(x=>x.id===id);
+  if(!d||!d.takenAt) return;
+  const cur = new Date(d.takenAt);
+  const val = prompt("Adjust the time this dose was actually taken (24-hour HH:MM):", pad(cur.getHours())+":"+pad(cur.getMinutes()));
+  if(!val) return;
+  const m = /^(\d{1,2}):(\d{2})$/.exec(val.trim());
+  if(!m || +m[1]>23 || +m[2]>59){ toastOnly("Please enter a time like 08:30."); return; }
+  const nd = new Date(cur); nd.setHours(+m[1], +m[2], 0, 0);
+  mutate("Dose time updated to "+fmt12(nd), ()=>{
+    const t = D.doses.find(x=>x.id===id);
+    t.takenAt = nd.toISOString(); t.ds = dateStr(nd);
   });
 }
 document.getElementById("dayPrev").onclick = ()=>{ viewDay = dateStr(new Date(slotDate(viewDay,"12:00").getTime()-864e5)); renderDay(); };
@@ -837,30 +1114,63 @@ function renderReport(){
   const pct = k => total? Math.round(dur[k]/total*100) : 0;
 
   // dose stats
-  let taken=0, skipped=0, onTime=0, delays=[];
+  let taken=0, skipped=0, onTime=0, delays=[], prnCount=0;
+  const ttoList=[];            // time-to-ON per scheduled dose (ms)
+  let mealNear=0, mealEligible=0;
+  const csAsc = D.checkins.map(c=>({ms:new Date(c.at).getTime(), state:c.state})).sort((a,b)=>a.ms-b.ms);
   for(const d of D.doses){
     if(!list.includes(d.ds)) continue;
     if(d.status==="skipped"){ skipped++; continue; }
     taken++;
-    const delay = new Date(d.takenAt).getTime() - slotDate(d.ds,d.time).getTime();
-    delays.push(delay);
-    if(Math.abs(delay)<=ONTIME_MS) onTime++;
+    if(d.prn){ prnCount++; }
+    else {
+      const delay = new Date(d.takenAt).getTime() - slotDate(d.ds,d.time).getTime();
+      delays.push(delay);
+      if(Math.abs(delay)<=ONTIME_MS) onTime++;
+    }
+    // time-to-ON: first ON check-in within 2h after this dose
+    const tk = new Date(d.takenAt).getTime();
+    const onCk = csAsc.find(c=>c.state==="on" && c.ms>=tk && c.ms<=tk+2*3600e3);
+    if(onCk) ttoList.push(onCk.ms - tk);
+    // meal proximity (only meaningful if any meals were logged)
+    if(D.meals.length){
+      mealEligible++;
+      if(nearestMealGap(tk) <= ONTIME_MS) mealNear++;
+    }
   }
   const avgDelay = delays.length? delays.reduce((a,b)=>a+b,0)/delays.length : 0;
+  const avgTTO = ttoList.length? ttoList.reduce((a,b)=>a+b,0)/ttoList.length : null;
 
-  document.getElementById("statGrid").innerHTML = `
-    <div class="stat"><div class="v" style="color:var(--on)">${pct("on")}%</div><div class="l">of tracked time feeling ON</div></div>
-    <div class="stat"><div class="v" style="color:var(--off)">${pct("off")}%</div><div class="l">of tracked time OFF${dur.wearing?` (+${pct("wearing")}% wearing off)`:""}</div></div>
-    <div class="stat"><div class="v">${taken}${skipped?`<span style="font-size:1rem;color:var(--ink-soft)"> +${skipped} skipped</span>`:""}</div><div class="l">${taken===1?"dose":"doses"} logged</div></div>
-    <div class="stat"><div class="v">${taken?Math.round(onTime/taken*100)+"%":"—"}</div><div class="l">taken within 30 min of schedule${delays.length&&avgDelay>60e3?` · avg ${fmtDur(avgDelay)} late`:""}</div></div>`;
+  const tiles = [
+    `<div class="stat"><div class="v" style="color:var(--on)">${pct("on")}%</div><div class="l">of tracked time feeling ON</div></div>`,
+    `<div class="stat"><div class="v" style="color:var(--off)">${pct("off")}%</div><div class="l">of tracked time OFF${dur.wearing?` (+${pct("wearing")}% wearing off)`:""}</div></div>`,
+    `<div class="stat"><div class="v">${taken}${skipped?`<span style="font-size:1rem;color:var(--ink-soft)"> +${skipped} skipped</span>`:""}</div><div class="l">${taken===1?"dose":"doses"} logged${prnCount?` · ${prnCount} extra`:""}</div></div>`,
+    `<div class="stat"><div class="v">${delays.length?Math.round(onTime/delays.length*100)+"%":"—"}</div><div class="l">on-time (±30 min)${delays.length&&avgDelay>60e3?` · avg ${fmtDur(avgDelay)} late`:""}</div></div>`
+  ];
+  if(avgTTO!=null) tiles.push(`<div class="stat"><div class="v" style="color:var(--on)">${fmtDur(avgTTO)}</div><div class="l">average time to feel ON after a dose</div></div>`);
+  if(mealEligible) tiles.push(`<div class="stat"><div class="v">${Math.round(mealNear/mealEligible*100)}%</div><div class="l">of doses within 30 min of a meal</div></div>`);
+  document.getElementById("statGrid").innerHTML = tiles.join("");
 
   const box = document.getElementById("insightBox");
+  const insights = [];
   const worst = Object.entries(offHours).sort((a,b)=>b[1]-a[1])[0];
   if(worst && worst[1]>=2){
     const h = Number(worst[0]);
     const hh = (h%12||12)+(h>=12?" PM":" AM");
-    box.innerHTML = `<div class="insight">📌 <b>Pattern spotted:</b> your OFF periods most often start around <b>${hh}</b>. Worth mentioning to your neurologist — a dose-timing adjustment near that hour may help.</div>`;
-  } else box.innerHTML = "";
+    insights.push(`📌 <b>OFF timing:</b> your OFF periods most often start around <b>${hh}</b>. Worth mentioning to your neurologist — a dose-timing adjustment near that hour may help.`);
+  }
+  if(avgTTO!=null && avgTTO > 45*60e3){
+    insights.push(`⏱ <b>Slow onset:</b> doses are taking about <b>${fmtDur(avgTTO)}</b> to kick in on average. If that feels long, ask whether timing relative to meals is a factor.`);
+  }
+  if(mealEligible>=4 && mealNear/mealEligible > 0.5){
+    insights.push(`🍽 <b>Meals &amp; doses overlap:</b> ${Math.round(mealNear/mealEligible*100)}% of doses were taken within 30 min of a meal. Dietary protein can slow levodopa absorption — spacing them out is worth discussing.`);
+  }
+  // surface the most common symptom tags
+  const tagCount={};
+  for(const c of D.checkins){ const ms=new Date(c.at).getTime(); if(ms<rangeStart) continue; (c.tags||[]).forEach(t=>tagCount[t]=(tagCount[t]||0)+1); }
+  const topTags = Object.entries(tagCount).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  if(topTags.length) insights.push(`🏷 <b>Most-noted symptoms:</b> ${topTags.map(([t,n])=>`${t} (${n})`).join(", ")}.`);
+  box.innerHTML = insights.length? `<div class="insight">${insights.join("<br><br>")}</div>` : "";
 
   document.getElementById("reportDays").innerHTML = list.map(ds=>`
     <div class="report-day">
@@ -872,19 +1182,56 @@ function renderReport(){
 document.querySelectorAll(".range-picker button").forEach(b=>{
   b.onclick = ()=>{ D.settings.reportDays = Number(b.dataset.days); save(); renderReport(); };
 });
-document.getElementById("printBtn").onclick = ()=>window.print();
+function buildPrintExtras(){
+  const days = D.settings.reportDays||7;
+  const list = [];
+  for(let i=days-1;i>=0;i--) list.push(dateStr(new Date(Date.now()-i*864e5)));
+  const from = daySub(list[0]), to = daySub(list[list.length-1]);
+  document.getElementById("printHead").innerHTML =
+    `<div class="ph-title">TEMPO — Medication &amp; Symptom Report</div>
+     <div class="ph-sub">${days}-day summary · ${from} – ${to}, ${new Date().getFullYear()}</div>
+     <div class="ph-meds">Medications: ${D.meds.map(m=>esc(m.name)+(m.dose?" ("+esc(m.dose)+")":"")+" — "+(m.prn?"as needed":m.times.map(fmt12hm).join(", "))).join(" · ")||"—"}</div>`;
+  // dose log table for the range
+  const rows = [];
+  for(const ds of list){
+    const dayDoses = D.doses.filter(d=>d.ds===ds || (d.takenAt&&dateStr(new Date(d.takenAt))===ds))
+      .sort((a,b)=> (a.takenAt?new Date(a.takenAt):slotDate(a.ds,a.time)) - (b.takenAt?new Date(b.takenAt):slotDate(b.ds,b.time)));
+    for(const d of dayDoses){
+      const med = D.meds.find(m=>m.id===d.medId);
+      const t = d.takenAt? fmt12(new Date(d.takenAt)) : "—";
+      const status = d.status==="skipped"? "skipped" : (d.prn? "extra" : "taken");
+      rows.push(`<tr><td>${dayLabel(ds)}</td><td>${esc(med?med.name:"—")}</td><td>${d.prn?"—":fmt12hm(d.time)}</td><td>${t}</td><td>${status}</td></tr>`);
+    }
+  }
+  document.getElementById("printLog").innerHTML =
+    `<h2>Dose log</h2><table class="print-table"><thead><tr><th>Day</th><th>Medication</th><th>Scheduled</th><th>Taken</th><th>Status</th></tr></thead><tbody>${rows.join("")||`<tr><td colspan="5">No doses logged.</td></tr>`}</tbody></table>`;
+}
+document.getElementById("printBtn").onclick = ()=>{ buildPrintExtras(); setTimeout(()=>window.print(), 60); };
 
 /* ================= MEDS screen ================= */
 function medFormHTML(med){
-  const times = med? med.times : ["08:00"];
+  const times = med && med.times.length? med.times : ["08:00"];
+  const prn = med? !!med.prn : false;
+  const hasInv = med && typeof med.inventory === "number";
   return `<form id="medForm" data-id="${med?med.id:""}">
     <label for="mfName">Medication name</label>
     <input type="text" id="mfName" placeholder="e.g. Carbidopa / Levodopa" value="${med?esc(med.name):""}" required>
     <label for="mfDose">Strength / dose <span class="muted" style="font-weight:400">(optional)</span></label>
     <input type="text" id="mfDose" placeholder="e.g. 25 / 100 mg, 1 tablet" value="${med?esc(med.dose||""):""}">
-    <label>Times each day</label>
-    <div id="mfTimes">${times.map(t=>timeRowHTML(t)).join("")}</div>
-    <button type="button" class="add-time" id="mfAddTime">＋ Add another time</button>
+    <div class="toggle-row" style="border:none;padding:14px 0 4px">
+      <div class="tl">As-needed only<small>No fixed schedule — you log it when you take it</small></div>
+      <button type="button" class="switch${prn?" on":""}" id="mfPrn" role="switch" aria-checked="${prn}" aria-label="As-needed only"></button>
+    </div>
+    <div id="mfSchedWrap" style="${prn?"display:none":""}">
+      <label>Times each day</label>
+      <div id="mfTimes">${times.map(t=>timeRowHTML(t)).join("")}</div>
+      <button type="button" class="add-time" id="mfAddTime">＋ Add another time</button>
+    </div>
+    <label>Pills on hand <span class="muted" style="font-weight:400">(optional — for refill reminders)</span></label>
+    <div class="time-row">
+      <input type="number" id="mfInv" min="0" step="1" inputmode="numeric" placeholder="e.g. 90" value="${hasInv?med.inventory:""}" style="text-align:center">
+      <input type="number" id="mfPer" min="1" step="1" inputmode="numeric" placeholder="pills/dose" value="${med&&med.pillsPerDose?med.pillsPerDose:""}" style="text-align:center" aria-label="Pills per dose">
+    </div>
     <div class="btn-row" style="margin-top:18px">
       <button type="submit" class="btn btn-take" style="min-height:72px;font-size:1.2rem">Save medication</button>
       ${med!==null||D.meds.length? `<button type="button" class="btn btn-ghost" id="mfCancel" style="margin-top:0">Cancel</button>`:""}
@@ -896,6 +1243,15 @@ function timeRowHTML(t){
 }
 function bindMedForm(host, onDone){
   const form = host.querySelector("#medForm");
+  const prnBtn = host.querySelector("#mfPrn");
+  const schedWrap = host.querySelector("#mfSchedWrap");
+  let prn = prnBtn.classList.contains("on");
+  prnBtn.onclick = ()=>{
+    prn = !prn;
+    prnBtn.classList.toggle("on", prn);
+    prnBtn.setAttribute("aria-checked", String(prn));
+    schedWrap.style.display = prn? "none" : "";
+  };
   host.querySelector("#mfAddTime").onclick = ()=>{
     host.querySelector("#mfTimes").insertAdjacentHTML("beforeend", timeRowHTML("12:00"));
     bindTimeDels(host);
@@ -907,13 +1263,20 @@ function bindMedForm(host, onDone){
     e.preventDefault();
     const name = host.querySelector("#mfName").value.trim();
     const dose = host.querySelector("#mfDose").value.trim();
-    const times = [...host.querySelectorAll("#mfTimes input")].map(i=>i.value).filter(Boolean);
-    if(!name||!times.length) return;
+    const times = prn? [] : [...host.querySelectorAll("#mfTimes input")].map(i=>i.value).filter(Boolean);
+    if(!name) return;
+    if(!prn && !times.length) return;
     times.sort();
+    const invRaw = host.querySelector("#mfInv").value.trim();
+    const perRaw = host.querySelector("#mfPer").value.trim();
+    const inventory = invRaw===""? null : Math.max(0, parseInt(invRaw,10)||0);
+    const pillsPerDose = perRaw===""? 1 : Math.max(1, parseInt(perRaw,10)||1);
     const id = form.dataset.id;
     mutate(id? "Medication updated" : "Medication added — "+name, ()=>{
-      if(id){ const m = D.meds.find(x=>x.id===id); m.name=name; m.dose=dose; m.times=times; }
-      else D.meds.push({id:uid(), name, dose, times});
+      const patch = m=>{ m.name=name; m.dose=dose; m.times=times; m.prn=prn; m.pillsPerDose=pillsPerDose;
+        if(inventory===null) delete m.inventory; else m.inventory=inventory; };
+      if(id){ patch(D.meds.find(x=>x.id===id)); }
+      else { const m={id:uid()}; patch(m); D.meds.push(m); }
     });
     host.innerHTML="";
     if(onDone) onDone();
@@ -927,14 +1290,26 @@ function bindTimeDels(host){
     };
   });
 }
+function invLine(m){
+  if(typeof m.inventory !== "number") return "";
+  const dosesLeft = Math.floor(m.inventory/(m.pillsPerDose||1));
+  const perDay = m.prn? 0 : m.times.length;
+  const daysLeft = perDay? Math.floor(dosesLeft/perDay) : null;
+  const low = daysLeft!=null ? daysLeft<=5 : dosesLeft<=6;
+  let txt = `${m.inventory} pills left`;
+  if(daysLeft!=null) txt += ` · ~${daysLeft} day${daysLeft===1?"":"s"}`;
+  return `<div class="inv-line ${low?"inv-low":"inv-ok"}">${low?"⚠️":"✓"} ${txt}${low?" — time to refill":""}</div>`;
+}
 function renderMeds(){
   const list = document.getElementById("medList");
   list.innerHTML = D.meds.length? D.meds.map(m=>`
     <div class="med-card">
-      <div class="m-name">${esc(m.name)}</div>
+      <div class="m-name">${esc(m.name)} ${m.prn?`<span class="prn-badge">as needed</span>`:""}</div>
       ${m.dose?`<div class="m-dose">${esc(m.dose)}</div>`:""}
-      <div class="chips">${m.times.map(t=>`<span class="chip">${fmt12hm(t)}</span>`).join("")}</div>
+      <div class="chips">${m.prn?`<span class="chip" style="background:var(--dysk-soft);color:var(--dysk)">no fixed schedule</span>`:m.times.map(t=>`<span class="chip">${fmt12hm(t)}</span>`).join("")}</div>
+      ${invLine(m)}
       <div class="med-actions">
+        ${typeof m.inventory==="number"?`<button data-act="refill" data-id="${m.id}">＋ Refilled</button>`:""}
         <button data-act="edit" data-id="${m.id}">Edit</button>
         <button data-act="del" data-id="${m.id}" class="danger">Remove</button>
       </div>
@@ -947,6 +1322,15 @@ function renderMeds(){
       host.innerHTML = medFormHTML(med);
       bindMedForm(host);
       host.scrollIntoView({behavior:"smooth"});
+    };
+    else if(b.dataset.act==="refill") b.onclick = ()=>{
+      const val = prompt("How many pills did you add to the bottle?", "90");
+      if(val===null) return;
+      const add = Math.max(0, parseInt(val,10)||0);
+      if(!add) return;
+      mutate("Refilled "+med.name+" — +"+add+" pills", ()=>{
+        const m = D.meds.find(x=>x.id===med.id); m.inventory = (m.inventory||0)+add;
+      });
     };
     else b.onclick = ()=> mutate("Removed "+med.name, ()=>{ D.meds = D.meds.filter(m=>m.id!==med.id); });
   });
@@ -976,6 +1360,16 @@ document.getElementById("notifyToggle").onclick = async ()=>{
   save(); renderToggles(); scheduleBackgroundReminders();
 };
 document.getElementById("soundToggle").onclick = ()=>{ D.settings.sound=!D.settings.sound; save(); renderToggles(); };
+function applyTextScale(){
+  const s = D.settings.textScale||"md";
+  document.documentElement.classList.remove("scale-lg","scale-xl");
+  if(s==="lg") document.documentElement.classList.add("scale-lg");
+  if(s==="xl") document.documentElement.classList.add("scale-xl");
+  document.querySelectorAll("#scalePicker button").forEach(b=>b.classList.toggle("active", b.dataset.scale===s));
+}
+document.querySelectorAll("#scalePicker button").forEach(b=>{
+  b.onclick = ()=>{ D.settings.textScale = b.dataset.scale; save(); applyTextScale(); };
+});
 document.getElementById("testReminder").onclick = ()=>{
   showReminderBox({med:{name:"Test medication"}, time:"12:00", test:true}, "This is what a dose reminder looks like.");
 };
@@ -1020,7 +1414,7 @@ document.getElementById("clearBtn").onclick = function(){
     return;
   }
   clearArmed = false; this.textContent = "Erase all data";
-  mutate("All data erased", ()=>{ D = {meds:[],doses:[],checkins:[],snoozes:{},settings:{notify:false,sound:true,reportDays:7}}; });
+  mutate("All data erased", ()=>{ D = {meds:[],doses:[],checkins:[],meals:[],snoozes:{},settings:{notify:false,sound:true,reportDays:7,textScale:D.settings.textScale||"md"}}; });
 };
 
 /* ---------- sample data ---------- */
@@ -1041,13 +1435,20 @@ function buildDemo(){
   // deterministic-ish generator (no Math.random dependency on first paint order)
   let seed = 20260707;
   const rnd = ()=>{ seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed/0x7fffffff; };
-  const med = {id:uid(), name:"Carbidopa / Levodopa", dose:"25 / 100 mg", times:["07:00","11:00","15:00","19:00"]};
-  const d = {meds:[med], doses:[], checkins:[], snoozes:{}, settings:{notify:false,sound:true,reportDays:14}};
+  const med = {id:uid(), name:"Carbidopa / Levodopa", dose:"25 / 100 mg", times:["07:00","11:00","15:00","19:00"], prn:false, pillsPerDose:1, inventory:38};
+  const rescue = {id:uid(), name:"Levodopa (rescue)", dose:"1 tablet", times:[], prn:true, pillsPerDose:1};
+  const d = {meds:[med,rescue], doses:[], checkins:[], meals:[], snoozes:{}, settings:{notify:false,sound:true,reportDays:14,textScale:D.settings.textScale||"md"}};
+  const TAGS = [["Tremor","Stiffness"],["Slowness"],["Freezing","Balance"],["Fatigue"],["Stiffness","Pain"]];
   const today = new Date();
   for(let back=13; back>=0; back--){
     const day = new Date(today.getFullYear(),today.getMonth(),today.getDate()-back);
     const ds = dateStr(day);
     const isToday = back===0;
+    // meals: breakfast ~7:45, lunch ~12:30, dinner ~18:30 (jittered)
+    for(const mh of [[7,45],[12,30],[18,30]]){
+      const mt = slotDate(ds, pad(mh[0])+":"+pad(mh[1])).getTime() + Math.round((rnd()-.5)*50)*60e3;
+      if(!isToday || mt<=Date.now()) d.meals.push({id:uid(), at:new Date(mt).toISOString()});
+    }
     for(const t of med.times){
       const sched = slotDate(ds,t).getTime();
       if(isToday && sched > Date.now()) continue;          // don't fabricate future doses
@@ -1058,21 +1459,30 @@ function buildDemo(){
       const lateMin = Math.round((rnd()*rnd())*55) - 5;     // usually near on-time, sometimes late
       const takenAt = new Date(sched + lateMin*60e3);
       d.doses.push({id:uid(), key:med.id+"|"+ds+"|"+t, medId:med.id, ds, time:t, takenAt:takenAt.toISOString(), status:"taken"});
-      // ON shortly after the dose kicks in
-      d.checkins.push({id:uid(), at:new Date(takenAt.getTime()+35*60e3).toISOString(), state:"on"});
-      // wears off toward the end of the ~4h window — worse in the afternoon
+      // ON after the dose kicks in — onset ~25-60 min, slower in the afternoon
       const hour = slotDate(ds,t).getHours();
       const afternoon = hour>=14 && hour<=17;
+      const onsetMin = Math.round(25 + rnd()*25 + (afternoon?15:0));
+      d.checkins.push({id:uid(), at:new Date(takenAt.getTime()+onsetMin*60e3).toISOString(), state:"on", tags:[], note:""});
+      // wears off toward the end of the ~4h window — worse in the afternoon
       if(rnd() < (afternoon?0.8:0.4)){
-        d.checkins.push({id:uid(), at:new Date(sched+ (afternoon?165:195)*60e3).toISOString(), state:"wearing"});
+        d.checkins.push({id:uid(), at:new Date(sched+ (afternoon?165:195)*60e3).toISOString(), state:"wearing", tags:[], note:""});
         if(rnd() < (afternoon?0.7:0.3))
-          d.checkins.push({id:uid(), at:new Date(sched+ (afternoon?210:225)*60e3).toISOString(), state:"off"});
+          d.checkins.push({id:uid(), at:new Date(sched+ (afternoon?210:225)*60e3).toISOString(), state:"off",
+            tags: TAGS[Math.floor(rnd()*TAGS.length)], note: rnd()<0.2?"Felt it come on quickly.":""});
       }
       if(rnd() < 0.05)
-        d.checkins.push({id:uid(), at:new Date(takenAt.getTime()+80*60e3).toISOString(), state:"dysk"});
+        d.checkins.push({id:uid(), at:new Date(takenAt.getTime()+80*60e3).toISOString(), state:"dysk", tags:[], note:""});
+    }
+    // an occasional rescue dose on a rough afternoon
+    if(rnd() < 0.18){
+      const rt = slotDate(ds,"16:30").getTime();
+      if(!isToday || rt<=Date.now())
+        d.doses.push({id:uid(), key:"prn|"+rescue.id+"|"+rt, medId:rescue.id, ds, time:"16:30", takenAt:new Date(rt).toISOString(), status:"taken", prn:true});
     }
   }
   d.checkins.sort((a,b)=>new Date(a.at)-new Date(b.at));
+  d.meals.sort((a,b)=>new Date(a.at)-new Date(b.at));
   return d;
 }
 
@@ -1194,7 +1604,7 @@ function esc(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;
 
 /* ================= boot ================= */
 function renderAll(){
-  renderNow(); renderToggles();
+  renderNow(); renderToggles(); applyTextScale();
   if(document.getElementById("screen-day").classList.contains("active")) renderDay();
   if(document.getElementById("screen-report").classList.contains("active")) renderReport();
   if(document.getElementById("screen-meds").classList.contains("active")) renderMeds();
@@ -1209,6 +1619,7 @@ function renderAll(){
   }
 }
 tickClock();
+applyTextScale();
 renderAll();
 renderMeds();
 registerSW();
