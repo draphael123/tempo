@@ -11,11 +11,13 @@ For Parkinson's, medication timing is treatment. A levodopa dose taken 30–60 m
 ## What it does
 
 - **Next-dose countdown** — a large ring and a single oversized "I took it" button. Doses gone more than 4 hours stale quietly become "missed" instead of nagging.
-- **One-tap symptom journal** — ON · Wearing off · OFF · Dyskinesia, timestamped. Every action has a 12-second UNDO instead of confirm dialogs.
-- **Day timeline** — a 24-hour ribbon showing how you felt, with marks for each dose actually taken.
-- **Doctor's report** — 7 / 14 / 30-day summary: % of time ON vs OFF, dose adherence and average lateness, an automatic "your OFF periods cluster around 2 PM" pattern hint, and a print button.
+- **One-tap symptom journal** — ON · Wearing off · OFF · Dyskinesia, timestamped. After a tap you can optionally add **symptom tags** (tremor, freezing, stiffness…) and a **note you can dictate by voice**. Every action has a 12-second UNDO instead of confirm dialogs.
+- **Meals & extra doses** — log a meal in one tap (dietary protein affects levodopa) and log rescue / as-needed doses taken off-schedule.
+- **Day timeline** — a 24-hour ribbon showing how you felt, with marks for each dose taken, extra doses, and meals. Logged dose times are editable.
+- **Doctor's report** — 7 / 14 / 30-day summary: % of time ON vs OFF, dose adherence and average lateness, **average time-to-ON** after a dose, **% of doses taken near a meal**, most-noted symptoms, and automatic pattern hints (e.g. "your OFF periods cluster around 6 PM"). One-click **Save as PDF / print** produces a clean report with a dose-log table.
+- **Medication management** — scheduled or as-needed meds, plus **pill inventory with refill reminders** ("~5 days left — time to refill").
 - **Reminders** — in-app alert + chime, plus OS notifications that fire even when the app is closed (on browsers supporting the Notification Triggers API; falls back gracefully elsewhere).
-- **Installable PWA** — add to home screen, works offline.
+- **Adjustable text size** and an installable, offline-capable **PWA** (add to home screen).
 - **Private by design** — all data stays in your browser (localStorage). Nothing is sent anywhere. Export / import a JSON backup any time.
 
 ## Accessibility
