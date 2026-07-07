@@ -29,9 +29,13 @@ Built to work on the user's *worst* hour, not their best:
 - High-contrast warm palette; `prefers-reduced-motion` respected
 - Destructive actions require a deliberate second press
 
+## Mobile app (Android)
+
+TEMPO is also packaged as a native Android app with [Capacitor](https://capacitorjs.com), which reuses the same web code and adds **reliable native dose reminders** that fire even when the app is closed — with no backend, so data stays on the device. See **[BUILD-ANDROID.md](BUILD-ANDROID.md)** for build & run steps. (iOS can use the same project but needs a Mac to build.)
+
 ## Tech
 
-Single-page vanilla HTML/CSS/JS. No build step, no dependencies, no backend. A small service worker provides offline caching and schedules dose notifications.
+Single-page vanilla HTML/CSS/JS for the web/PWA — no build step, no runtime dependencies, no backend. A service worker provides offline caching and schedules web notifications. The native app wraps the same files with Capacitor and swaps in `@capacitor/local-notifications` for on-device reminders.
 
 ## Try it with sample data
 
