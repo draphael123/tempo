@@ -1,0 +1,9 @@
+android
+node_modules
+assets
+scripts
+www
+capacitor.config.json
+package.json
+package-lock.json
+*.md
