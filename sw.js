@@ -1,5 +1,5 @@
 /* TEMPO service worker — offline shell + scheduled dose notifications */
-const CACHE = "tempo-v3";
+const CACHE = "tempo-v4";
 const ASSETS = [
   "./",
   "./index.html",

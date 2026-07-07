@@ -193,6 +193,9 @@ header{padding:calc(22px + env(safe-area-inset-top)) 0 6px;text-align:center}
   position:absolute;bottom:-2px;font-size:11px;line-height:1;filter:saturate(.7);
   z-index:1;pointer-events:none;
 }
+.ribbon .fall-tick{
+  position:absolute;top:-3px;font-size:12px;line-height:1;z-index:2;pointer-events:none;
+}
 .ribbon-hours{
   display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft);
   margin-top:6px;font-variant-numeric:tabular-nums;
@@ -317,13 +320,13 @@ nav{
   background:var(--card);border-top:2px solid var(--line);
   padding:8px 8px calc(8px + env(safe-area-inset-bottom));
 }
-.nav-inner{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.nav-inner{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
 .nav-btn{
-  min-height:78px;border:none;background:transparent;border-radius:16px;
+  min-height:74px;border:none;background:transparent;border-radius:16px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-  font-size:.95rem;font-weight:700;color:var(--ink-soft);
+  font-size:.82rem;font-weight:700;color:var(--ink-soft);
 }
-.nav-btn svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.nav-btn svg{width:27px;height:27px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .nav-btn *,.feel *,.btn *{pointer-events:none}
 .nav-btn.active{background:var(--on-soft);color:var(--on)}
 
@@ -419,6 +422,88 @@ html.scale-xl{font-size:26px}
 }
 .section-gap{height:6px}
 
+/* ---------- health tab ---------- */
+.stuck-btn{
+  background:var(--dysk);color:#fff;min-height:88px;font-size:1.4rem;margin-top:18px;
+  box-shadow:0 4px 0 #533985, 0 12px 24px -10px rgba(107,74,160,.5);
+}
+.stuck-btn:active{transform:translateY(3px);box-shadow:none}
+.well-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:2px solid var(--line)}
+.well-row:last-child{border-bottom:none}
+.well-label{flex:1;font-weight:700;font-size:1rem;min-width:8ch}
+.well-scale{display:flex;gap:6px}
+.well-dot{
+  width:44px;height:44px;border-radius:12px;border:2px solid var(--line-strong);
+  background:var(--card);font-weight:700;font-size:1rem;color:var(--ink-soft);
+}
+.well-dot.sel{border-color:var(--on);background:var(--on);color:#fff}
+.well-row.bad .well-dot.sel{border-color:var(--off);background:var(--off)}
+.well-saved{margin-top:12px;text-align:center;color:var(--on);font-weight:700;min-height:1.3em}
+
+.ex-stat{display:flex;gap:12px}
+.ex-stat .stat{flex:1}
+.ex-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:2px solid var(--line);font-size:1rem}
+.ex-item:last-child{border-bottom:none}
+.ex-item .t{font-family:var(--disp);font-weight:650;min-width:5ch}
+.ex-item .x{flex:1;font-weight:700}
+
+.emerg-field{margin-bottom:12px}
+.emerg-field .k{font-size:.8rem;color:var(--ink-soft);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.emerg-field .v{font-size:1.1rem;font-weight:700;line-height:1.35;white-space:pre-wrap}
+.emerg-field .v.empty{color:var(--line-strong);font-weight:400}
+
+/* ---------- full-screen tool overlays ---------- */
+.tool-overlay{
+  position:fixed;inset:0;z-index:66;display:none;align-items:center;justify-content:center;
+  background:rgba(42,35,27,.6);padding:16px;
+}
+.tool-overlay.show{display:flex}
+.tool-box{
+  position:relative;background:var(--card);border-radius:24px;width:100%;max-width:520px;
+  max-height:92vh;overflow-y:auto;padding:26px 22px calc(22px + env(safe-area-inset-bottom));
+  text-align:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);
+}
+.tool-box h3{font-family:var(--disp);font-weight:750;font-size:1.7rem}
+.tool-box>p.muted{font-size:1rem;margin:8px 0 18px;line-height:1.45}
+.tool-close{
+  position:absolute;top:12px;right:12px;width:52px;height:52px;border-radius:14px;
+  border:2px solid var(--line-strong);background:transparent;font-size:1.3rem;color:var(--ink-soft);
+}
+.gait-pulse{
+  width:180px;height:180px;border-radius:50%;margin:6px auto 20px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--disp);font-weight:750;font-size:1.6rem;color:var(--dysk);
+  background:var(--dysk-soft);border:5px solid var(--dysk);transition:transform .07s;
+}
+.gait-pulse.beat{transform:scale(1.14);background:var(--dysk);color:#fff}
+.bpm-row{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:20px}
+.bpm-btn{width:66px;height:66px;border-radius:50%;border:2px solid var(--line-strong);background:var(--card);font-size:1.8rem;font-weight:700}
+.bpm-val{font-family:var(--disp);font-weight:750;font-size:2.2rem;line-height:1;min-width:4ch}
+.bpm-val small{display:block;font-family:var(--body);font-size:.8rem;font-weight:400;color:var(--ink-soft)}
+.tap-targets{display:flex;gap:16px;margin:10px 0 16px}
+.tap-target{
+  flex:1;height:170px;border-radius:24px;border:4px solid var(--on);background:var(--on-soft);
+  font-family:var(--disp);font-weight:750;font-size:2rem;color:var(--on);
+}
+.tap-target.hit{background:var(--on);color:#fff;transform:scale(.97)}
+.tap-target:disabled{opacity:.4;border-color:var(--line-strong);background:var(--card);color:var(--ink-soft)}
+.tap-stat{font-family:var(--disp);font-weight:650;font-size:1.15rem;margin:8px 0 14px;min-height:1.4em;line-height:1.4}
+.tap-stat b{font-size:1.5rem}
+.spiral-canvas{width:min(80vw,340px);height:min(80vw,340px);touch-action:none;border-radius:16px;background:var(--card);border:2px solid var(--line);margin:0 auto 12px;display:block}
+.woq-opt{
+  display:flex;align-items:center;gap:12px;width:100%;min-height:60px;margin-bottom:8px;
+  border-radius:14px;border:2px solid var(--line-strong);background:var(--card);
+  font-size:1.05rem;font-weight:700;padding:0 16px;text-align:left;
+}
+.woq-opt .box{width:28px;height:28px;border-radius:8px;border:2px solid var(--line-strong);flex-shrink:0}
+.woq-opt.sel{border-color:var(--wearing);background:var(--wearing-soft)}
+.woq-opt.sel .box{background:var(--wearing);border-color:var(--wearing)}
+.trend-line{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:2px solid var(--line);font-size:1rem}
+.trend-line:last-child{border-bottom:none}
+.trend-line .tl-name{flex:1;font-weight:700}
+.trend-line .tl-arrow{font-weight:700;font-size:1.1rem}
+.up-bad{color:var(--off)} .up-good{color:var(--on)} .flat{color:var(--ink-soft)}
+
 /* ---------- print ---------- */
 .print-head{display:none}
 .print-only{display:none}
@@ -493,8 +578,9 @@ html.scale-xl{font-size:26px}
       <div class="card">
         <h2>Quick log</h2>
         <div class="btn-row">
-          <button class="btn btn-ghost" id="mealBtn" style="margin-top:0">🍽&nbsp; Log a meal</button>
+          <button class="btn btn-ghost" id="mealBtn" style="margin-top:0">🍽&nbsp; Meal</button>
           <button class="btn btn-ghost" id="extraDoseBtn" style="margin-top:0">➕&nbsp; Extra dose</button>
+          <button class="btn btn-ghost" id="fallBtn" style="margin-top:0;color:var(--off);border-color:var(--off)">🩹&nbsp; Fall</button>
         </div>
         <p class="muted" style="font-size:.85rem;line-height:1.4;margin-top:10px">Meals matter: protein can delay how fast levodopa works, so logging them helps the report spot the connection.</p>
       </div>
@@ -545,7 +631,21 @@ html.scale-xl{font-size:26px}
       <h2>Summary</h2>
       <div class="stat-grid" id="statGrid"></div>
       <div id="insightBox"></div>
+      <div id="trendsBox"></div>
     </div>
+
+    <div class="card" id="visitCard">
+      <h2>For your next visit</h2>
+      <p class="muted" style="font-size:.9rem;margin-bottom:6px">A running list of things to raise with your neurologist. The summary below is built from what you've logged.</p>
+      <div id="visitSummary"></div>
+      <ul class="log-list" id="visitNotesList" style="margin-top:12px"></ul>
+      <div class="time-row" style="margin-top:10px">
+        <input type="text" id="visitNoteInput" placeholder="Add a question or note…">
+        <button type="button" id="visitNoteAdd" aria-label="Add note" style="width:64px;min-height:64px;border-radius:14px;border:2px solid var(--line-strong);background:transparent;font-size:1.6rem;color:var(--on);font-weight:700">＋</button>
+      </div>
+      <button class="btn btn-ghost no-print" id="woqBtn" style="margin-top:12px">📋&nbsp; Take the wearing-off check</button>
+    </div>
+
     <div class="card">
       <h2>Day by day</h2>
       <p class="muted" style="font-size:.9rem;margin-bottom:6px">Each row is one day, midnight to midnight. Dots are doses; colors are how you felt.</p>
@@ -559,6 +659,41 @@ html.scale-xl{font-size:26px}
       <div class="card print-only" id="printLog" style="display:none"></div>
       <button class="btn btn-ghost no-print" id="printBtn" style="margin-top:18px">🖨&nbsp; Save as PDF / print for your doctor</button>
       <p class="muted no-print" style="font-size:.82rem;text-align:center;margin-top:8px">In the print dialog, choose <b>“Save as PDF”</b> as the destination to get a file you can email.</p>
+    </div>
+  </section>
+
+  <!-- ================= HEALTH ================= -->
+  <section class="screen" id="screen-health">
+    <button class="btn stuck-btn" id="stuckBtn">🧊&nbsp; I'm stuck — start a walking beat</button>
+
+    <div class="card">
+      <h2>Today's wellness check</h2>
+      <p class="muted" style="font-size:.9rem;margin-bottom:6px">The non-motor side of Parkinson's — often missed at appointments. Takes a few taps.</p>
+      <div id="wellnessForm"></div>
+    </div>
+
+    <div class="card">
+      <h2>Movement check</h2>
+      <p class="muted" style="font-size:.9rem;margin-bottom:12px">Quick self-tests that track your tremor and speed over time — the same kinds of checks a neurologist does.</p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="tapTestBtn" style="margin-top:0">👆&nbsp; Tapping test</button>
+        <button class="btn btn-ghost" id="spiralTestBtn" style="margin-top:0">🌀&nbsp; Spiral test</button>
+      </div>
+      <div id="testTrend"></div>
+    </div>
+
+    <div class="card">
+      <h2>Exercise</h2>
+      <p class="muted" style="font-size:.9rem;margin-bottom:10px">Regular activity is one of the few things shown to slow Parkinson's. Log anything that gets you moving.</p>
+      <div id="exerciseSummary"></div>
+      <button class="btn btn-ghost" id="logExerciseBtn" style="margin-top:12px">＋&nbsp; Log exercise</button>
+      <div id="exerciseForm"></div>
+    </div>
+
+    <div class="card">
+      <h2>Emergency card</h2>
+      <p class="muted" style="font-size:.9rem;margin-bottom:10px">Your key info in one place for a caregiver or paramedic — diagnosis, meds, contacts. Stays on this device.</p>
+      <div id="emergencyView"></div>
     </div>
   </section>
 
@@ -654,6 +789,83 @@ html.scale-xl{font-size:26px}
   </div>
 </div>
 
+<!-- fall quick-log -->
+<div class="sheet" id="fallSheet" role="dialog" aria-modal="true" aria-label="Log a fall">
+  <div class="sheet-box">
+    <div class="sheet-handle"></div>
+    <h3>Log a fall</h3>
+    <p class="muted" style="font-size:.95rem;margin:4px 0 12px">Recorded at the current time. Add detail if you can — all optional.</p>
+    <label>Were you hurt?</label>
+    <div class="seg-picker" id="fallInjury">
+      <button data-v="none" class="active">No</button>
+      <button data-v="minor">A little</button>
+      <button data-v="serious">Yes</button>
+    </div>
+    <label for="fallNote" style="margin-top:14px">What were you doing? <span class="muted" style="font-weight:400">(optional)</span></label>
+    <input type="text" id="fallNote" placeholder="e.g. turning in the kitchen, getting up">
+    <button class="btn btn-take" id="fallSave" style="min-height:72px;font-size:1.2rem;margin-top:16px">Save</button>
+    <button class="btn btn-ghost" id="fallCancel" style="margin-top:10px">Cancel</button>
+  </div>
+</div>
+
+<!-- gait cue metronome -->
+<div class="tool-overlay" id="gaitOverlay" role="dialog" aria-modal="true" aria-label="Walking beat">
+  <div class="tool-box">
+    <button class="tool-close" id="gaitClose" aria-label="Close">✕</button>
+    <h3>Walking beat</h3>
+    <p class="muted">Step on each beat. A steady rhythm helps unfreeze your walk.</p>
+    <div class="gait-pulse" id="gaitPulse">STEP</div>
+    <div class="bpm-row">
+      <button class="bpm-btn" id="bpmDown" aria-label="Slower">−</button>
+      <div class="bpm-val"><span id="bpmVal">90</span><small>steps / min</small></div>
+      <button class="bpm-btn" id="bpmUp" aria-label="Faster">＋</button>
+    </div>
+    <button class="btn btn-take" id="gaitToggle" style="min-height:88px;font-size:1.4rem">▶&nbsp; Start</button>
+  </div>
+</div>
+
+<!-- tapping test -->
+<div class="tool-overlay" id="tapOverlay" role="dialog" aria-modal="true" aria-label="Tapping test">
+  <div class="tool-box">
+    <button class="tool-close" id="tapClose" aria-label="Close">✕</button>
+    <h3>Tapping test</h3>
+    <p class="muted" id="tapHint">Tap the two big circles one after the other, as fast and evenly as you can, for 15 seconds.</p>
+    <div class="tap-targets" id="tapTargets" style="display:none">
+      <button class="tap-target" data-side="L">L</button>
+      <button class="tap-target" data-side="R">R</button>
+    </div>
+    <div class="tap-stat" id="tapStat"></div>
+    <button class="btn btn-take" id="tapStart" style="min-height:80px;font-size:1.3rem">Start test</button>
+    <button class="btn btn-ghost" id="tapDone" style="display:none">Done</button>
+  </div>
+</div>
+
+<!-- spiral test -->
+<div class="tool-overlay" id="spiralOverlay" role="dialog" aria-modal="true" aria-label="Spiral test">
+  <div class="tool-box">
+    <button class="tool-close" id="spiralClose" aria-label="Close">✕</button>
+    <h3>Spiral test</h3>
+    <p class="muted" id="spiralHint">Trace the grey spiral with your finger, from the centre outward, as smoothly as you can.</p>
+    <canvas id="spiralCanvas" width="600" height="600" class="spiral-canvas"></canvas>
+    <div class="tap-stat" id="spiralStat"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="spiralClear" style="margin-top:0">Clear</button>
+      <button class="btn btn-take" id="spiralSave" style="margin-top:0">Save result</button>
+    </div>
+  </div>
+</div>
+
+<!-- WOQ-9 wearing-off questionnaire -->
+<div class="tool-overlay" id="woqOverlay" role="dialog" aria-modal="true" aria-label="Wearing-off check">
+  <div class="tool-box">
+    <button class="tool-close" id="woqClose" aria-label="Close">✕</button>
+    <h3>Wearing-off check</h3>
+    <p class="muted">Tick any symptom that <b>improves after your next dose</b>. This is a common screen for medication wearing off.</p>
+    <div id="woqList"></div>
+    <button class="btn btn-take" id="woqSave" style="min-height:72px;font-size:1.2rem">See result</button>
+  </div>
+</div>
+
 <!-- snackbar -->
 <div class="snackbar" id="snackbar" aria-live="polite">
   <span id="snackText"></span>
@@ -667,6 +879,9 @@ html.scale-xl{font-size:26px}
     </button>
     <button class="nav-btn" data-screen="day">
       <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Day
+    </button>
+    <button class="nav-btn" data-screen="health">
+      <svg viewBox="0 0 24 24"><path d="M20.8 5.6a5 5 0 0 0-7-.2L12 7l-1.8-1.6a5 5 0 0 0-7 7.2l8.8 8.6 8.8-8.6a5 5 0 0 0 0-7.2z"/></svg>Health
     </button>
     <button class="nav-btn" data-screen="report">
       <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Report
@@ -692,16 +907,29 @@ const GRACE_MS = 4 * 3600e3;         // a dose stays "due" for 4 h before counti
 const ONTIME_MS = 30 * 60e3;
 
 const SYMPTOM_TAGS = ["Tremor","Stiffness","Slowness","Freezing","Balance","Nausea","Dizziness","Fatigue","Anxiety","Pain"];
+// non-motor daily wellness items (1 = best .. 5 = worst, "none" = 0)
+const WELLNESS_ITEMS = [
+  {key:"sleep",     label:"Sleep last night",        good:"Slept well",  bad:"Slept badly"},
+  {key:"mood",      label:"Mood",                     good:"Good",        bad:"Low / anxious"},
+  {key:"dizzy",     label:"Dizzy when standing",      good:"Not at all",  bad:"Very dizzy"},
+  {key:"bowel",     label:"Constipation",             good:"Fine",        bad:"Bad"},
+  {key:"fatigue",   label:"Fatigue",                  good:"Energetic",   bad:"Exhausted"},
+  {key:"cognition", label:"Thinking clarity",         good:"Sharp",       bad:"Foggy"}
+];
+const DATA_ARRAYS = ["meds","doses","checkins","meals","falls","wellness","exercise","visitNotes","woq","tapTests","spiralTests"];
 let D = load();
 function load(){
-  const base = {meds:[],doses:[],checkins:[],meals:[],snoozes:{},settings:{}};
-  const baseSettings = {notify:false,sound:true,reportDays:7,textScale:"md"};
+  const base = {snoozes:{}, settings:{}, emergency:{}};
+  DATA_ARRAYS.forEach(k=>base[k]=[]);
+  const baseSettings = {notify:false,sound:true,reportDays:7,textScale:"md",exerciseGoal:30};
   try{
     const raw = localStorage.getItem(LS_KEY);
     if(raw){ const d = JSON.parse(raw);
-      const merged = Object.assign({}, base, d, {settings:Object.assign({}, baseSettings, d.settings||{})});
-      if(!Array.isArray(merged.meals)) merged.meals = [];
-      // forward-compat defaults on records
+      const merged = Object.assign({}, base, d, {
+        settings:Object.assign({}, baseSettings, d.settings||{}),
+        emergency:Object.assign({}, d.emergency||{})
+      });
+      DATA_ARRAYS.forEach(k=>{ if(!Array.isArray(merged[k])) merged[k]=[]; });
       merged.meds.forEach(m=>{ if(m.prn===undefined) m.prn=false; });
       return merged;
     }
@@ -1019,6 +1247,12 @@ function paintRibbon(el, ds, opts){
     const l = (ms-dayStart)/864e5*100;
     html += `<div class="dose-tick${dose.prn?" dose-tick-prn":""}" style="left:calc(${l}% - 2px)" title="${dose.prn?"Extra dose":"Dose"} ${fmt12(new Date(ms))}"></div>`;
   }
+  for(const fall of D.falls){
+    const ms = new Date(fall.at).getTime();
+    if(ms<dayStart||ms>=dayEnd) continue;
+    const l = (ms-dayStart)/864e5*100;
+    html += `<div class="fall-tick" style="left:calc(${l}% - 7px)" title="Fall ${fmt12(new Date(ms))}">⚠️</div>`;
+  }
   el.innerHTML = html;
 }
 
@@ -1058,6 +1292,20 @@ function renderDay(){
     items.push({ms:t.getTime(), id:m.id, kind:"meal",
       swatch:"var(--wearing)", time:fmt12(t), what:"🍽 Meal", sub:""});
   }
+  for(const f of D.falls){
+    const t = new Date(f.at);
+    if(dateStr(t)!==viewDay) continue;
+    const inj = f.injury==="serious"?"injured":f.injury==="minor"?"minor injury":"not hurt";
+    items.push({ms:t.getTime(), id:f.id, kind:"fall",
+      swatch:"var(--off)", time:fmt12(t), what:"⚠️ Fall",
+      sub:[inj, f.note].filter(Boolean).join(" · ")});
+  }
+  for(const ex of D.exercise){
+    const t = new Date(ex.at);
+    if(dateStr(t)!==viewDay) continue;
+    items.push({ms:t.getTime(), id:ex.id, kind:"exercise",
+      swatch:"var(--on)", time:fmt12(t), what:"🏃 "+esc(ex.type), sub:ex.minutes+" min"});
+  }
   items.sort((a,b)=>a.ms-b.ms);
   const ul = document.getElementById("dayLog");
   ul.innerHTML = items.length? items.map(it=>`
@@ -1075,6 +1323,8 @@ function renderDay(){
       mutate("Entry deleted", ()=>{
         if(kind==="dose") D.doses = D.doses.filter(x=>x.id!==id);
         else if(kind==="meal") D.meals = D.meals.filter(x=>x.id!==id);
+        else if(kind==="fall") D.falls = D.falls.filter(x=>x.id!==id);
+        else if(kind==="exercise") D.exercise = D.exercise.filter(x=>x.id!==id);
         else D.checkins = D.checkins.filter(x=>x.id!==id);
       });
     };
@@ -1189,6 +1439,8 @@ function renderReport(){
       <div class="ribbon" data-ds="${ds}"></div>
     </div>`).join("");
   document.querySelectorAll("#reportDays .ribbon").forEach(el=>paintRibbon(el, el.dataset.ds));
+  renderTrends();
+  renderVisit();
 }
 document.querySelectorAll(".range-picker button").forEach(b=>{
   b.onclick = ()=>{ D.settings.reportDays = Number(b.dataset.days); save(); renderReport(); };
@@ -1432,7 +1684,7 @@ document.getElementById("clearBtn").onclick = function(){
     return;
   }
   clearArmed = false; this.textContent = "Erase all data";
-  mutate("All data erased", ()=>{ D = {meds:[],doses:[],checkins:[],meals:[],snoozes:{},settings:{notify:false,sound:true,reportDays:7,textScale:D.settings.textScale||"md"}}; });
+  mutate("All data erased", ()=>{ const keepScale=D.settings.textScale||"md"; D={snoozes:{},emergency:{},settings:{notify:false,sound:true,reportDays:7,textScale:keepScale,exerciseGoal:30}}; DATA_ARRAYS.forEach(k=>D[k]=[]); });
 };
 
 /* ---------- sample data ---------- */
@@ -1455,8 +1707,12 @@ function buildDemo(){
   const rnd = ()=>{ seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed/0x7fffffff; };
   const med = {id:uid(), name:"Carbidopa / Levodopa", dose:"25 / 100 mg", times:["07:00","11:00","15:00","19:00"], prn:false, pillsPerDose:1, inventory:38};
   const rescue = {id:uid(), name:"Levodopa (rescue)", dose:"1 tablet", times:[], prn:true, pillsPerDose:1};
-  const d = {meds:[med,rescue], doses:[], checkins:[], meals:[], snoozes:{}, settings:{notify:false,sound:true,reportDays:14,textScale:D.settings.textScale||"md"}};
+  const d = {snoozes:{}, emergency:{diagnosis:"Parkinson's disease", neuro:"Dr. Okafor · (555) 010-2233", contact:"Sam (spouse) · (555) 867-2200"}, settings:{notify:false,sound:true,reportDays:14,textScale:D.settings.textScale||"md",exerciseGoal:30}};
+  DATA_ARRAYS.forEach(k=>d[k]=[]);
+  d.meds=[med,rescue];
+  d.visitNotes=[{id:uid(),at:new Date().toISOString(),text:"Ask about afternoon OFF periods around 4pm",done:false},{id:uid(),at:new Date().toISOString(),text:"Is my evening dose timing right?",done:false}];
   const TAGS = [["Tremor","Stiffness"],["Slowness"],["Freezing","Balance"],["Fatigue"],["Stiffness","Pain"]];
+  const EX = ["Walk","Boxing","Cycling","Stretching","PT exercises"];
   const today = new Date();
   for(let back=13; back>=0; back--){
     const day = new Date(today.getFullYear(),today.getMonth(),today.getDate()-back);
@@ -1466,6 +1722,22 @@ function buildDemo(){
     for(const mh of [[7,45],[12,30],[18,30]]){
       const mt = slotDate(ds, pad(mh[0])+":"+pad(mh[1])).getTime() + Math.round((rnd()-.5)*50)*60e3;
       if(!isToday || mt<=Date.now()) d.meals.push({id:uid(), at:new Date(mt).toISOString()});
+    }
+    // exercise most days (~30-40 min)
+    if(rnd() < 0.72){
+      const et = slotDate(ds,"09:30").getTime() + Math.round((rnd()-.5)*120)*60e3;
+      if(!isToday || et<=Date.now()) d.exercise.push({id:uid(), at:new Date(et).toISOString(), type:EX[Math.floor(rnd()*EX.length)], minutes:25+Math.round(rnd()*3)*5});
+    }
+    // non-motor wellness most days (1=good..5=bad, worse earlier in the fortnight to show a trend)
+    if(rnd() < 0.8){
+      const sev = 1 + Math.round(rnd()*2) + (back>7?1:0);
+      d.wellness.push({id:uid(), date:ds, at:new Date(slotDate(ds,"20:00")).toISOString(),
+        scores:{sleep:Math.min(5,sev), mood:Math.min(5,1+Math.round(rnd()*2)), dizzy:Math.min(5,1+Math.round(rnd()*2)+(back>9?1:0)), bowel:Math.min(5,2+Math.round(rnd()*2)), fatigue:Math.min(5,sev), cognition:Math.min(5,1+Math.round(rnd()*2))}});
+    }
+    // falls: a couple guaranteed early on (improving trend) plus occasional random
+    if(back===11 || back===9 || (rnd() < (back>7?0.15:0.05))){
+      const ft = slotDate(ds,"16:00").getTime() + Math.round((rnd()-.5)*300)*60e3;
+      if(!isToday || ft<=Date.now()) d.falls.push({id:uid(), at:new Date(ft).toISOString(), injury: back===11?"minor":"none", note: back===9?"turning in the kitchen":""});
     }
     for(const t of med.times){
       const sched = slotDate(ds,t).getTime();
@@ -1499,10 +1771,359 @@ function buildDemo(){
         d.doses.push({id:uid(), key:"prn|"+rescue.id+"|"+rt, medId:rescue.id, ds, time:"16:30", takenAt:new Date(rt).toISOString(), status:"taken", prn:true});
     }
   }
-  d.checkins.sort((a,b)=>new Date(a.at)-new Date(b.at));
-  d.meals.sort((a,b)=>new Date(a.at)-new Date(b.at));
+  // a few movement self-tests over the fortnight (slight improvement)
+  for(const b of [12,8,4,1]){
+    const at = new Date(slotDate(dateStr(new Date(Date.now()-b*864e5)),"10:00")).toISOString();
+    d.tapTests.push({id:uid(), at, taps:60+Math.round((12-b)*1.2)+Math.round(rnd()*6), cadence:120+Math.round((12-b))+Math.round(rnd()*8), rhythm:72+Math.round((12-b))+Math.round(rnd()*6)});
+    d.spiralTests.push({id:uid(), at, score:70+Math.round((12-b))+Math.round(rnd()*6)});
+  }
+  d.woq=[{id:uid(), at:new Date(Date.now()-2*864e5).toISOString(), score:3, items:["Tremor","Stiffness","Slowness of movement"]}];
+  ["checkins","meals","falls","exercise","wellness","tapTests","spiralTests"].forEach(k=>d[k].sort((a,b)=>new Date(a.at||a.date)-new Date(b.at||b.date)));
   return d;
 }
+
+/* ================= HEALTH features ================= */
+let _actx;
+function actx(){ _actx = _actx || new (window.AudioContext||window.webkitAudioContext)(); return _actx; }
+function tock(freq){
+  if(!D.settings.sound) return;
+  try{ const c=actx(), o=c.createOscillator(), g=c.createGain();
+    o.type="square"; o.frequency.value=freq||880;
+    g.gain.setValueAtTime(0.0001,c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.18,c.currentTime+.004);
+    g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+.09);
+    o.connect(g).connect(c.destination); o.start(); o.stop(c.currentTime+.1);
+  }catch(e){}
+}
+
+/* ---- falls ---- */
+let fallInjurySel="none";
+document.getElementById("fallBtn").onclick = ()=>{
+  fallInjurySel="none";
+  document.querySelectorAll("#fallInjury button").forEach(b=>b.classList.toggle("active", b.dataset.v==="none"));
+  document.getElementById("fallNote").value="";
+  document.getElementById("fallSheet").classList.add("show");
+};
+document.querySelectorAll("#fallInjury button").forEach(b=>b.onclick=()=>{
+  fallInjurySel=b.dataset.v;
+  document.querySelectorAll("#fallInjury button").forEach(x=>x.classList.toggle("active",x===b));
+});
+document.getElementById("fallCancel").onclick=()=>document.getElementById("fallSheet").classList.remove("show");
+document.getElementById("fallSheet").addEventListener("click",e=>{ if(e.target.id==="fallSheet") e.currentTarget.classList.remove("show"); });
+document.getElementById("fallSave").onclick=()=>{
+  haptic("HEAVY");
+  const note=document.getElementById("fallNote").value.trim(), injury=fallInjurySel;
+  document.getElementById("fallSheet").classList.remove("show");
+  mutate("Fall logged", ()=>{ D.falls.push({id:uid(), at:new Date().toISOString(), injury, note}); D.falls.sort((a,b)=>new Date(a.at)-new Date(b.at)); });
+};
+
+/* ---- non-motor wellness ---- */
+function renderWellness(){
+  const host=document.getElementById("wellnessForm");
+  const today=dateStr(new Date());
+  const e=D.wellness.find(w=>w.date===today) || {scores:{}};
+  host.innerHTML=WELLNESS_ITEMS.map(it=>{
+    const v=e.scores[it.key];
+    const dots=[1,2,3,4,5].map(n=>`<button class="well-dot${v===n?" sel":""}" data-key="${it.key}" data-v="${n}">${n}</button>`).join("");
+    return `<div class="well-row bad"><span class="well-label">${it.label}<br><span class="muted" style="font-weight:400;font-size:.78rem">${it.good} → ${it.bad}</span></span><span class="well-scale">${dots}</span></div>`;
+  }).join("")+`<div class="well-saved" id="wellSaved"></div>`;
+  host.querySelectorAll(".well-dot").forEach(b=>b.onclick=()=>setWellness(b.dataset.key, Number(b.dataset.v)));
+}
+function setWellness(key,val){
+  const today=dateStr(new Date());
+  let e=D.wellness.find(w=>w.date===today);
+  if(!e){ e={id:uid(),date:today,at:new Date().toISOString(),scores:{}}; D.wellness.push(e); }
+  if(e.scores[key]===val) delete e.scores[key]; else e.scores[key]=val;
+  e.at=new Date().toISOString();
+  haptic("LIGHT"); save(); renderWellness();
+  document.getElementById("wellSaved").textContent="Saved for today ✓";
+}
+
+/* ---- exercise ---- */
+function dayMinutes(ds){ return D.exercise.filter(e=>dateStr(new Date(e.at))===ds).reduce((a,b)=>a+b.minutes,0); }
+function renderExercise(){
+  const host=document.getElementById("exerciseSummary");
+  const goal=D.settings.exerciseGoal||30;
+  const todayMin=dayMinutes(dateStr(new Date()));
+  let streak=0;
+  for(let i=0;i<400;i++){ if(dayMinutes(dateStr(new Date(Date.now()-i*864e5)))>=goal) streak++; else break; }
+  const weekMin=D.exercise.filter(e=>new Date(e.at).getTime()>=Date.now()-7*864e5).reduce((a,b)=>a+b.minutes,0);
+  host.innerHTML=`<div class="ex-stat">
+    <div class="stat"><div class="v" style="color:${todayMin>=goal?'var(--on)':'var(--ink)'}">${todayMin}<span style="font-size:1rem;color:var(--ink-soft)">/${goal}m</span></div><div class="l">today's goal</div></div>
+    <div class="stat"><div class="v">${weekMin}m</div><div class="l">this week</div></div>
+    <div class="stat"><div class="v">${streak}${streak?" 🔥":""}</div><div class="l">day streak</div></div>
+  </div>`;
+  const recent=D.exercise.slice(-3).reverse();
+  if(recent.length) host.innerHTML+=`<div style="margin-top:10px">${recent.map(e=>`<div class="ex-item"><span class="t">${fmt12(new Date(e.at))}</span><span class="x">${esc(e.type)}</span><span>${e.minutes}m</span></div>`).join("")}</div>`;
+}
+document.getElementById("logExerciseBtn").onclick=()=>{
+  const host=document.getElementById("exerciseForm");
+  if(host.querySelector("form")){ host.innerHTML=""; return; }
+  host.innerHTML=`<form id="exForm" style="margin-top:14px">
+    <div class="chips" id="exTypes">${["Walk","Boxing","Cycling","Stretching","PT exercises","Dancing","Swimming"].map(t=>`<button type="button" class="chip" data-t="${t}">${t}</button>`).join("")}</div>
+    <input type="text" id="exType" placeholder="Activity" style="margin-top:12px" required>
+    <input type="number" id="exMin" min="1" inputmode="numeric" placeholder="Minutes" style="margin-top:10px" required>
+    <button type="submit" class="btn btn-take" style="min-height:66px;margin-top:14px">Save</button>
+  </form>`;
+  host.querySelectorAll("#exTypes .chip").forEach(c=>{ c.style.cursor="pointer"; c.onclick=()=>host.querySelector("#exType").value=c.dataset.t; });
+  host.querySelector("#exForm").onsubmit=e=>{
+    e.preventDefault();
+    const type=host.querySelector("#exType").value.trim();
+    const min=Math.max(1,parseInt(host.querySelector("#exMin").value,10)||0);
+    if(!type||!min) return;
+    host.innerHTML="";
+    mutate("Exercise logged — "+type+" "+min+"m",()=>{ D.exercise.push({id:uid(),at:new Date().toISOString(),type,minutes:min}); D.exercise.sort((a,b)=>new Date(a.at)-new Date(b.at)); });
+  };
+};
+
+/* ---- emergency card ---- */
+function emergMedsList(){ return D.meds.map(m=>m.name+(m.dose?" "+m.dose:"")).join(", ")||"—"; }
+function renderEmergency(){
+  const e=D.emergency||{};
+  const f=(label,val,fallback)=>`<div class="emerg-field"><div class="k">${label}</div><div class="v ${val?"":"empty"}">${val?esc(val):(fallback||"Not set")}</div></div>`;
+  document.getElementById("emergencyView").innerHTML=
+    f("Name",e.name)+
+    f("Diagnosis",e.diagnosis,"Parkinson's disease")+
+    `<div class="emerg-field"><div class="k">Current medications</div><div class="v">${esc(emergMedsList())}</div></div>`+
+    f("Allergies",e.allergies)+
+    f("Neurologist",e.neuro)+
+    f("Emergency contact",e.contact)+
+    f("Other notes",e.notes)+
+    `<div class="btn-row no-print" style="margin-top:8px"><button class="btn btn-ghost" id="emergEdit" style="margin-top:0">Edit</button><button class="btn btn-ghost" id="emergShare" style="margin-top:0">Share</button></div>`;
+  document.getElementById("emergEdit").onclick=editEmergency;
+  document.getElementById("emergShare").onclick=shareEmergency;
+}
+function editEmergency(){
+  const e=D.emergency||{};
+  const host=document.getElementById("emergencyView");
+  const row=(id,label,val,ph)=>`<label for="${id}">${label}</label><input type="text" id="${id}" value="${val?esc(val):""}" placeholder="${ph||""}">`;
+  host.innerHTML=`<form id="emergForm">
+    ${row("emName","Name",e.name)}
+    ${row("emDiag","Diagnosis",e.diagnosis||"Parkinson's disease")}
+    ${row("emAllergy","Allergies",e.allergies,"e.g. penicillin — or None")}
+    ${row("emNeuro","Neurologist (name & phone)",e.neuro)}
+    ${row("emContact","Emergency contact (name & phone)",e.contact)}
+    ${row("emNotes","Other notes",e.notes,"blood type, other conditions…")}
+    <div class="btn-row" style="margin-top:16px"><button type="submit" class="btn btn-take" style="margin-top:0;min-height:66px">Save</button><button type="button" class="btn btn-ghost" id="emergCancel" style="margin-top:0">Cancel</button></div>
+  </form>`;
+  host.querySelector("#emergCancel").onclick=renderEmergency;
+  host.querySelector("#emergForm").onsubmit=ev=>{
+    ev.preventDefault();
+    const val=id=>host.querySelector("#"+id).value.trim();
+    mutate("Emergency card saved",()=>{ D.emergency={name:val("emName"),diagnosis:val("emDiag"),allergies:val("emAllergy"),neuro:val("emNeuro"),contact:val("emContact"),notes:val("emNotes")}; });
+  };
+}
+function shareEmergency(){
+  const e=D.emergency||{};
+  const txt=`MEDICAL INFO${e.name?" — "+e.name:""}\nDiagnosis: ${e.diagnosis||"Parkinson's disease"}\nMedications: ${emergMedsList()}\nAllergies: ${e.allergies||"—"}\nNeurologist: ${e.neuro||"—"}\nEmergency contact: ${e.contact||"—"}${e.notes?"\nNotes: "+e.notes:""}`;
+  if(navigator.share) navigator.share({title:"Medical info",text:txt}).catch(()=>{});
+  else if(navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>toastOnly("Copied to clipboard")).catch(()=>toastOnly("Couldn't copy"));
+  else toastOnly("Sharing isn't available here");
+}
+
+/* ---- gait cue metronome ---- */
+let gaitTimer=null, gaitBpm=90;
+document.getElementById("stuckBtn").onclick=()=>{ document.getElementById("gaitOverlay").classList.add("show"); document.getElementById("bpmVal").textContent=gaitBpm; };
+document.getElementById("gaitClose").onclick=()=>{ stopGait(); document.getElementById("gaitOverlay").classList.remove("show"); };
+document.getElementById("bpmUp").onclick=()=>{ gaitBpm=Math.min(140,gaitBpm+5); document.getElementById("bpmVal").textContent=gaitBpm; if(gaitTimer) startGait(); };
+document.getElementById("bpmDown").onclick=()=>{ gaitBpm=Math.max(40,gaitBpm-5); document.getElementById("bpmVal").textContent=gaitBpm; if(gaitTimer) startGait(); };
+document.getElementById("gaitToggle").onclick=()=>{ if(gaitTimer) stopGait(); else startGait(); };
+function startGait(){
+  stopGait();
+  document.getElementById("gaitToggle").textContent="⏸  Stop";
+  const pulse=document.getElementById("gaitPulse");
+  const beat=()=>{ pulse.classList.add("beat"); setTimeout(()=>pulse.classList.remove("beat"),90); tock(760); haptic("LIGHT"); };
+  gaitTimer=setInterval(beat, 60000/gaitBpm); beat();
+}
+function stopGait(){ if(gaitTimer){ clearInterval(gaitTimer); gaitTimer=null; } document.getElementById("gaitToggle").textContent="▶  Start"; }
+
+/* ---- tapping test ---- */
+let tapState=null;
+document.getElementById("tapTestBtn").onclick=()=>{ resetTap(); document.getElementById("tapOverlay").classList.add("show"); };
+document.getElementById("tapClose").onclick=()=>{ if(tapState){clearTimeout(tapState.timer);tapState=null;} document.getElementById("tapOverlay").classList.remove("show"); };
+document.getElementById("tapDone").onclick=()=>document.getElementById("tapOverlay").classList.remove("show");
+document.getElementById("tapStart").onclick=startTapTest;
+function resetTap(){
+  tapState=null;
+  document.getElementById("tapTargets").style.display="none";
+  document.getElementById("tapStart").style.display="";
+  document.getElementById("tapDone").style.display="none";
+  document.getElementById("tapHint").style.display="";
+  document.getElementById("tapStat").textContent="";
+  document.querySelectorAll(".tap-target").forEach(t=>t.disabled=false);
+}
+function startTapTest(){
+  tapState={taps:[], expect:"L", start:Date.now(), dur:15000};
+  document.getElementById("tapHint").style.display="none";
+  document.getElementById("tapStart").style.display="none";
+  document.getElementById("tapTargets").style.display="flex";
+  tapTick();
+}
+function tapTick(){
+  if(!tapState) return;
+  const left=tapState.dur-(Date.now()-tapState.start);
+  if(left<=0){ endTapTest(); return; }
+  document.getElementById("tapStat").innerHTML=`<b>${tapState.taps.length}</b> taps · ${Math.ceil(left/1000)}s left`;
+  tapState.timer=setTimeout(tapTick,100);
+}
+document.querySelectorAll(".tap-target").forEach(t=>t.onclick=()=>{
+  if(!tapState || t.dataset.side!==tapState.expect) return;
+  t.classList.add("hit"); setTimeout(()=>t.classList.remove("hit"),90);
+  tapState.taps.push(Date.now());
+  tapState.expect = tapState.expect==="L"?"R":"L";
+  haptic("LIGHT");
+});
+function endTapTest(){
+  if(!tapState) return;
+  clearTimeout(tapState.timer);
+  const taps=tapState.taps, n=taps.length;
+  const cadence=Math.round(n/(tapState.dur/1000)*60);
+  let cv=0;
+  if(n>2){ const iv=[]; for(let i=1;i<n;i++) iv.push(taps[i]-taps[i-1]); const mean=iv.reduce((a,b)=>a+b,0)/iv.length; const sd=Math.sqrt(iv.reduce((a,b)=>a+(b-mean)**2,0)/iv.length); cv=mean?sd/mean:0; }
+  const rhythm=Math.round((1-Math.min(1,cv))*100);
+  tapState=null;
+  document.getElementById("tapTargets").style.display="none";
+  document.getElementById("tapStat").innerHTML=`<b>${n}</b> taps · ${cadence}/min · rhythm ${rhythm}%`;
+  document.getElementById("tapDone").style.display="";
+  mutate("Tapping test saved",()=>{ D.tapTests.push({id:uid(),at:new Date().toISOString(),taps:n,cadence,rhythm}); });
+}
+
+/* ---- spiral test ---- */
+let spiralCtx=null, spiralPts=[], spiralDrawing=false, lastSpiralScore=null;
+document.getElementById("spiralTestBtn").onclick=()=>{ document.getElementById("spiralOverlay").classList.add("show"); setTimeout(initSpiral,40); };
+document.getElementById("spiralClose").onclick=()=>document.getElementById("spiralOverlay").classList.remove("show");
+document.getElementById("spiralClear").onclick=()=>{ spiralPts=[]; lastSpiralScore=null; drawSpiralGuide(); document.getElementById("spiralStat").textContent=""; };
+document.getElementById("spiralSave").onclick=()=>{
+  if(lastSpiralScore==null){ toastOnly("Trace the spiral first."); return; }
+  mutate("Spiral test saved",()=>{ D.spiralTests.push({id:uid(),at:new Date().toISOString(),score:lastSpiralScore}); });
+  document.getElementById("spiralOverlay").classList.remove("show");
+};
+function initSpiral(){ spiralCtx=document.getElementById("spiralCanvas").getContext("2d"); spiralPts=[]; lastSpiralScore=null; document.getElementById("spiralStat").textContent=""; drawSpiralGuide(); }
+function drawSpiralGuide(){
+  const cv=document.getElementById("spiralCanvas"), ctx=spiralCtx; if(!ctx) return;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.strokeStyle="#C9BBA0"; ctx.lineWidth=7; ctx.lineCap="round"; ctx.beginPath();
+  const cx=cv.width/2, cy=cv.height/2, turns=3, maxR=cv.width*0.44;
+  for(let a=0;a<=turns*2*Math.PI;a+=0.04){ const r=a/(turns*2*Math.PI)*maxR, x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); a===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }
+  ctx.stroke();
+}
+function spiralPos(e){
+  const cv=document.getElementById("spiralCanvas"), r=cv.getBoundingClientRect();
+  return { x:(e.clientX-r.left)*(cv.width/r.width), y:(e.clientY-r.top)*(cv.height/r.height) };
+}
+(function bindSpiral(){
+  const cv=document.getElementById("spiralCanvas");
+  cv.addEventListener("pointerdown",e=>{ spiralDrawing=true; spiralPts=[spiralPos(e)]; try{cv.setPointerCapture(e.pointerId);}catch(_){} e.preventDefault(); });
+  cv.addEventListener("pointermove",e=>{ if(!spiralDrawing) return; const p=spiralPos(e), a=spiralPts[spiralPts.length-1]; spiralPts.push(p); const ctx=spiralCtx; ctx.strokeStyle="#157A5F"; ctx.lineWidth=5; ctx.lineCap="round"; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(p.x,p.y); ctx.stroke(); e.preventDefault(); });
+  const finish=()=>{ if(spiralDrawing){ spiralDrawing=false; scoreSpiral(); } };
+  cv.addEventListener("pointerup",finish); cv.addEventListener("pointercancel",finish);
+})();
+function scoreSpiral(){
+  if(spiralPts.length<25){ document.getElementById("spiralStat").textContent="Trace more of the spiral, then Save."; lastSpiralScore=null; return; }
+  let totalTurn=0, count=0;
+  for(let i=2;i<spiralPts.length;i++){
+    const a=spiralPts[i-2],b=spiralPts[i-1],c=spiralPts[i];
+    const l1=Math.hypot(b.x-a.x,b.y-a.y), l2=Math.hypot(c.x-b.x,c.y-b.y);
+    if(l1<2||l2<2) continue;
+    let d=Math.abs(Math.atan2(c.y-b.y,c.x-b.x)-Math.atan2(b.y-a.y,b.x-a.x));
+    if(d>Math.PI) d=2*Math.PI-d;
+    totalTurn+=d; count++;
+  }
+  const meanDeg=count? totalTurn/count*180/Math.PI : 0;
+  lastSpiralScore=Math.max(0,Math.min(100,Math.round(100-Math.max(0,meanDeg-4)*4)));
+  document.getElementById("spiralStat").innerHTML=`Smoothness <b>${lastSpiralScore}%</b>`;
+}
+
+/* ---- WOQ-9 wearing-off ---- */
+const WOQ_ITEMS=["Tremor","Slowness of movement","Stiffness","Reduced dexterity","Low mood","Anxiety / panic","Pain or aching","Cloudy thinking","Fatigue"];
+let woqSel=new Set();
+document.getElementById("woqBtn") && (document.getElementById("woqBtn").onclick=openWoq);
+function openWoq(){
+  woqSel=new Set();
+  document.getElementById("woqList").innerHTML=WOQ_ITEMS.map((t,i)=>`<button class="woq-opt" data-i="${i}"><span class="box"></span><span>${t}</span></button>`).join("");
+  document.querySelectorAll("#woqList .woq-opt").forEach(b=>b.onclick=()=>{ const i=b.dataset.i; if(woqSel.has(i)){woqSel.delete(i);b.classList.remove("sel");}else{woqSel.add(i);b.classList.add("sel");} });
+  document.getElementById("woqOverlay").classList.add("show");
+}
+document.getElementById("woqClose").onclick=()=>document.getElementById("woqOverlay").classList.remove("show");
+document.getElementById("woqSave").onclick=()=>{
+  const score=woqSel.size, items=[...woqSel].map(i=>WOQ_ITEMS[i]);
+  mutate("Wearing-off check saved",()=>{ D.woq.push({id:uid(),at:new Date().toISOString(),score,items}); });
+  document.getElementById("woqOverlay").classList.remove("show");
+  toastOnly(score>=3? score+" symptoms may point to dose wearing-off — worth raising with your doctor" : score+" symptom"+(score===1?"":"s")+" noted");
+};
+
+/* ---- visit prep + notes ---- */
+function renderVisit(){
+  const days=D.settings.reportDays||7, since=Date.now()-days*864e5;
+  const falls=D.falls.filter(f=>new Date(f.at).getTime()>=since).length;
+  const offCk=D.checkins.filter(c=>new Date(c.at).getTime()>=since && c.state==="off").length;
+  const tagCount={}; D.checkins.filter(c=>new Date(c.at).getTime()>=since).forEach(c=>(c.tags||[]).forEach(t=>tagCount[t]=(tagCount[t]||0)+1));
+  const topTags=Object.entries(tagCount).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t])=>t);
+  const nm={}; D.wellness.filter(w=>slotDate(w.date,"12:00").getTime()>=since).forEach(w=>Object.entries(w.scores||{}).forEach(([k,v])=>{ if(v>=4) nm[k]=(nm[k]||0)+1; }));
+  const nmItems=Object.keys(nm).map(k=>(WELLNESS_ITEMS.find(i=>i.key===k)||{}).label).filter(Boolean);
+  const lastWoq=D.woq.slice(-1)[0];
+  const lines=[];
+  if(offCk) lines.push(`${offCk} OFF episode${offCk===1?"":"s"} logged`);
+  if(falls) lines.push(`<b style="color:var(--off)">${falls} fall${falls===1?"":"s"}</b>`);
+  if(topTags.length) lines.push(`Most-noted symptoms: ${topTags.join(", ")}`);
+  if(nmItems.length) lines.push(`Non-motor concerns: ${nmItems.join(", ")}`);
+  if(lastWoq && lastWoq.score>=3) lines.push(`Wearing-off check flagged ${lastWoq.score} symptoms`);
+  document.getElementById("visitSummary").innerHTML=lines.length? `<div class="insight">🩺 In the last ${days} days:<br>${lines.join("<br>")}</div>` : `<p class="muted" style="font-size:.9rem">Nothing flagged yet — keep logging and this fills in automatically.</p>`;
+  const ul=document.getElementById("visitNotesList");
+  ul.innerHTML=D.visitNotes.map(n=>`<li class="log-item"><span class="what" style="${n.done?'text-decoration:line-through;opacity:.55':''}">${esc(n.text)}</span><button class="log-edit no-print" data-done="${n.id}" aria-label="Mark done">✓</button><button class="log-del no-print" data-note="${n.id}" aria-label="Delete">✕</button></li>`).join("");
+  ul.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>mutate("Updated",()=>{ const n=D.visitNotes.find(x=>x.id===b.dataset.done); n.done=!n.done; }));
+  ul.querySelectorAll("[data-note]").forEach(b=>b.onclick=()=>mutate("Note deleted",()=>{ D.visitNotes=D.visitNotes.filter(x=>x.id!==b.dataset.note); }));
+}
+document.getElementById("visitNoteAdd").onclick=()=>{
+  const inp=document.getElementById("visitNoteInput"), t=inp.value.trim(); if(!t) return; inp.value="";
+  mutate("Question added",()=>{ D.visitNotes.push({id:uid(),at:new Date().toISOString(),text:t,done:false}); });
+};
+document.getElementById("visitNoteInput").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); document.getElementById("visitNoteAdd").click(); } });
+
+/* ---- trends (period vs previous period) ---- */
+function stateDurations(startMs,endMs){
+  const dur={on:0,wearing:0,off:0,dysk:0};
+  const cs=D.checkins.map(c=>({ms:new Date(c.at).getTime(),state:c.state})).sort((a,b)=>a.ms-b.ms);
+  for(let i=0;i<cs.length;i++){
+    const c=cs[i]; if(c.ms>=endMs) break;
+    let end=Math.min(c.ms+CHECKIN_CAP_MS, i+1<cs.length?cs[i+1].ms:Infinity, endMs);
+    const s0=Math.max(c.ms,startMs);
+    if(end>s0) dur[c.state]+=end-s0;
+  }
+  dur.total=dur.on+dur.wearing+dur.off+dur.dysk;
+  return dur;
+}
+function renderTrends(){
+  const box=document.getElementById("trendsBox");
+  const days=D.settings.reportDays||7, now=Date.now();
+  const curStart=now-days*864e5, prevStart=now-2*days*864e5;
+  const cur=stateDurations(curStart,now), prev=stateDurations(prevStart,curStart);
+  const fallsCur=D.falls.filter(f=>new Date(f.at).getTime()>=curStart).length;
+  const fallsPrev=D.falls.filter(f=>{const t=new Date(f.at).getTime();return t>=prevStart&&t<curStart;}).length;
+  const exCur=D.exercise.filter(e=>new Date(e.at).getTime()>=curStart).reduce((a,b)=>a+b.minutes,0);
+  const exPrev=D.exercise.filter(e=>{const t=new Date(e.at).getTime();return t>=prevStart&&t<curStart;}).reduce((a,b)=>a+b.minutes,0);
+  if(!prev.total && !fallsPrev && !exPrev){ box.innerHTML=""; return; }
+  const pOff=cur.total?Math.round(cur.off/cur.total*100):0, pOffPrev=prev.total?Math.round(prev.off/prev.total*100):0;
+  const arrow=(d,unit,incBad)=>{ if(d===0) return `<span class="tl-arrow flat">→ no change</span>`; const bad=incBad?d>0:d<0; return `<span class="tl-arrow ${bad?'up-bad':'up-good'}">${d>0?'↑':'↓'} ${Math.abs(d)}${unit}</span>`; };
+  box.innerHTML=`<div style="margin-top:16px"><div class="rd-label" style="font-weight:700;margin-bottom:2px">Vs the previous ${days} days</div>
+    <div class="trend-line"><span class="tl-name">OFF time</span>${arrow(pOff-pOffPrev,"%",true)}</div>
+    <div class="trend-line"><span class="tl-name">Falls</span>${arrow(fallsCur-fallsPrev,"",true)}</div>
+    <div class="trend-line"><span class="tl-name">Exercise</span>${arrow(exCur-exPrev,"m",false)}</div>
+  </div>`;
+}
+
+/* ---- test trend on Health tab ---- */
+function renderTestTrend(){
+  const host=document.getElementById("testTrend");
+  const t=D.tapTests.slice(-1)[0], s=D.spiralTests.slice(-1)[0];
+  let html="";
+  if(t) html+=`<div class="ex-item"><span class="x">👆 Tapping</span><span>${t.cadence}/min · rhythm ${t.rhythm}%</span></div>`;
+  if(s) html+=`<div class="ex-item"><span class="x">🌀 Spiral</span><span>smoothness ${s.score}%</span></div>`;
+  if(D.tapTests.length>=2){ const d=t.cadence-D.tapTests[D.tapTests.length-2].cadence; html+=`<p class="muted" style="font-size:.85rem;margin-top:8px">Tapping ${d>=0?"↑":"↓"} ${Math.abs(d)}/min vs your last test.</p>`; }
+  host.innerHTML=html? `<div style="margin-top:14px">${html}</div>`:"";
+}
+
+function renderHealth(){ renderWellness(); renderTestTrend(); renderExercise(); renderEmergency(); }
 
 /* ================= reminders ================= */
 let activeReminderSlot = null, lastChimeKey = null;
@@ -1703,6 +2324,7 @@ document.querySelectorAll(".nav-btn").forEach(b=>{
     if(b.dataset.screen==="day"){ viewDay = dateStr(new Date()); renderDay(); }
     if(b.dataset.screen==="report") renderReport();
     if(b.dataset.screen==="meds") renderMeds();
+    if(b.dataset.screen==="health") renderHealth();
     window.scrollTo({top:0});
   };
 });
@@ -1721,6 +2343,7 @@ function renderAll(){
   if(document.getElementById("screen-day").classList.contains("active")) renderDay();
   if(document.getElementById("screen-report").classList.contains("active")) renderReport();
   if(document.getElementById("screen-meds").classList.contains("active")) renderMeds();
+  if(document.getElementById("screen-health").classList.contains("active")) renderHealth();
   // onboarding form binding (host swapped by renderNow)
   const ob = document.getElementById("onboardFormCard");
   if(D.meds.length===0 && ob.querySelector("#medForm") && !ob.dataset.bound){
